@@ -155,6 +155,17 @@ section {
   border-radius: 8px;
 }
 
+.noir-quote2 {
+  font-family: 'NanumMiRaeNaMu';
+  font-size: 1.8rem;
+  color: white;
+  text-align: center;
+  margin-top: 50px;
+  padding: 20px;
+  line-height: 1.5;
+  letter-spacing: 1px;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.4);
+}
 /* 반응형 대응 */
 @media (max-width: 768px) {
   .team-grid {
@@ -184,7 +195,7 @@ section {
 	margin-left:auto;
 }
 </style>
-
+<link href="https://hangeul.pstatic.net/hangeul_static/css/NanumMiRaeNaMu.css" rel="stylesheet">
 <section class="about-header section1 fade-up">
   <h1>About NOIR</h1>
   <p>
@@ -253,7 +264,10 @@ section {
     우리는 당신의 저녁이 단순히 ‘맛있는’ 시간이 아닌, 느긋하게 삶을 음미하는 시간이 되기를 소망합니다.<br>
     그렇게 한 끼가, 하루를 바꾸는 조용한 울림이 될 수 있도록.
   </p>
-  
+  <br>
+  <div class="noir-quote2 fade-up">
+  	훌륭한 맛은 발견되는 것이 아닙니다. 조용히, 그리고 천천히 정제됩니다. - 셰프 박세진
+  </div>
 </section>
 
 

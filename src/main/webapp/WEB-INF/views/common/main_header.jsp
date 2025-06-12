@@ -169,7 +169,7 @@
         <a href="<c:url value='/reservation/form.do'/>">RESERVATION</a>
         <a href="<c:url value='/gallery.do'/>">GALLERY</a>
         <c:if test="${not empty sessionScope.member}">
-		    <a href="<c:url value='/member/mypage.do'/>">MYPAGE</a>
+		    <a href="<c:url value='/mypage.do'/>">MYPAGE</a>
 		</c:if>
         <a href="<c:url value='/review.do'/>">REVIEW</a>
     </nav>

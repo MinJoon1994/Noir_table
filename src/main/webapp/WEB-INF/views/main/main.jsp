@@ -64,11 +64,11 @@ body {
   margin-left: auto;
   margin-right: auto;
   display: flex;
-  width: 80%;
+  width: 85%;
   height: 400px; /* 원하는 높이로 조정 */
-  gap:10px;
+  gap:15px;
   overflow: hidden;
-  margin-top: 150px;
+  margin-top: 50px;
   margin-bottom: 150px;
   
 }
@@ -183,7 +183,27 @@ body {
 	width:50px;
 	height:50px;
 }
+
+.noir-quote {
+  font-family: 'Great Vibes', cursive;
+  font-size: 2.4rem;
+  color: black;
+  text-align: center;
+  margin-top: 20px;
+  padding: 20px;
+  line-height: 1.5;
+  letter-spacing: 1px;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.4);
+}
+
 </style>
+
+<link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet">
+
+
+<div class="noir-quote fade-up">
+  Great taste isn’t found. It’s refined — quietly, patiently. - Chef park
+</div>
 
 <div class="main_food_container fade-up">
   <img class="main_food_img" src="${contextPath}/resources/image/main_food1.png" alt="Food 1">

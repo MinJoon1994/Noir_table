@@ -33,6 +33,12 @@
 		<put-attribute name="header" value="/WEB-INF/views/common/main_header.jsp" />
 		<put-attribute name="body" value="/WEB-INF/views/main/gallery.jsp" />
 	</definition>
+	
+	<definition name="/mypage" extends="baseLayout">
+		<put-attribute name="title" value="𝐍𝐎𝐈𝐑 | mypage" />
+		<put-attribute name="header" value="/WEB-INF/views/common/main_header.jsp" />
+		<put-attribute name="body" value="/WEB-INF/views/main/mypage.jsp" />
+	</definition>
 </tiles-definitions>
 
 

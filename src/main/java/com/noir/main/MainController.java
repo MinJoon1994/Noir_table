@@ -91,6 +91,20 @@ public class MainController {
 	    
 		return mav;
 	}
+	
+	//마이페이지
+	@RequestMapping(value= "/mypage.do")
+	public ModelAndView myPage(HttpServletRequest request, HttpServletResponse response) throws Exception{
+				
+		ModelAndView mav=new ModelAndView();
+		
+		String viewName=(String)request.getAttribute("viewName");
+		
+		mav.setViewName(viewName);
+	    
+		return mav;
+	}
+	
 }
 
 
