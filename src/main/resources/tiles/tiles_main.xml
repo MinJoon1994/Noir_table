@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE tiles-definitions PUBLIC
+       "-//Apache Software Foundation//DTD Tiles Configuration 2.0//EN"
+       "http://tiles.apache.org/dtds/tiles-config_2_0.dtd">
+<tiles-definitions>
+	<definition name="baseLayout"
+		template="/WEB-INF/views/common/layout.jsp">
+		<put-attribute name="title" value="레이아웃 페이지" />
+		<put-attribute name="header" value="/WEB-INF/views/common/header.jsp" />
+		<put-attribute name="side" value="/WEB-INF/views/common/side.jsp" />
+		<put-attribute name="body" value="" />
+		<put-attribute name="footer" value="/WEB-INF/views/common/footer.jsp" />
+		<put-attribute name="quickMenu" value="/WEB-INF/views/common/quickMenu.jsp" />
+	</definition>
+
+    <!-- MainController클래스 내부의 
+         main메소드 내부에 작성된 뷰주소 /main/main와 아래의 name속성값 /main/main 이 일치하면
+    	 해당 템플릿을 사용 합니다 -->
+	<definition name="/main" extends="baseLayout">
+		<put-attribute name="title" value="𝐍𝐎𝐈𝐑 | Main" />
+		<put-attribute name="header" value="/WEB-INF/views/common/main_header.jsp" />
+		<put-attribute name="body" value="/WEB-INF/views/main/main.jsp" />
+	</definition>
+	
+	<definition name="/about" extends="baseLayout">
+		<put-attribute name="title" value="𝐍𝐎𝐈𝐑 | about" />
+		<put-attribute name="header" value="/WEB-INF/views/common/main_header.jsp" />
+		<put-attribute name="body" value="/WEB-INF/views/main/about.jsp" />
+	</definition>
+		
+	<definition name="/gallery" extends="baseLayout">
+		<put-attribute name="title" value="𝐍𝐎𝐈𝐑 | gallery" />
+		<put-attribute name="header" value="/WEB-INF/views/common/main_header.jsp" />
+		<put-attribute name="body" value="/WEB-INF/views/main/gallery.jsp" />
+	</definition>
+</tiles-definitions>
+
+
