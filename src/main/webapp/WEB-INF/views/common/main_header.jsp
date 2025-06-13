@@ -166,7 +166,16 @@
     <nav>
         <a href="<c:url value='/about.do'/>">ABOUT</a>
         <a href="<c:url value='/menu/list.do?menuType='/>">MENU</a>
-        <a href="<c:url value='/reservation/form.do'/>">RESERVATION</a>
+        
+        <c:choose>
+		  <c:when test="${sessionScope.member.role eq 'ADMIN'}">
+		    <a href="<c:url value='/reservationAdmin.do'/>">RESERVATION</a>
+		  </c:when>
+		  <c:when test="${sessionScope.member.role eq 'USER'}">
+		    <a href="<c:url value='/reservationUser.do'/>">RESERVATION</a>
+		  </c:when>
+		</c:choose>
+		
         <a href="<c:url value='/gallery.do'/>">GALLERY</a>
         <c:if test="${not empty sessionScope.member}">
 		    <a href="<c:url value='/mypage.do'/>">MYPAGE</a>
