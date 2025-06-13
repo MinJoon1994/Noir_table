@@ -127,6 +127,14 @@ section {
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   object-fit: cover;
+  filter:grayScale(100%);
+  transition: filter 0.7s ease-in;
+}
+
+.team-member img:hover {
+  filter:grayScale(0%);
+  transition: filter 0.3s ease-out;
+  cursor:pointer;
 }
 
 .team-member h3 {
@@ -166,6 +174,18 @@ section {
   letter-spacing: 1px;
   text-shadow: 0 1px 3px rgba(0,0,0,0.4);
 }
+
+.noir-quote3 {
+  font-family: 'NanumMiRaeNaMu';
+  font-size: 1.3rem;
+  color: white;
+  text-align: center;
+  margin-top: 50px;
+  padding: 20px;
+  line-height: 1.5;
+  letter-spacing: 1px;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.4);
+}
 /* 반응형 대응 */
 @media (max-width: 768px) {
   .team-grid {
@@ -175,6 +195,63 @@ section {
 
   .team-member {
     width: 80%;
+  }
+}
+
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 999;
+  left: 0; top: 0; right: 0; bottom: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-content {
+  position: relative;
+  background-color: #1c1c1c;
+  color: #f5f5f5;
+  padding: 30px 40px;
+  border-radius: 12px;
+  max-width: 500px;
+  text-align: center;
+  animation: fadeInUp 0.5s ease-out;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+}
+
+.close-btn {
+  position: absolute;
+  top: 20px; right: 30px;
+  font-size: 28px;
+  color: #fff;
+  cursor: pointer;
+}
+
+.modal-img {
+  width: 180px;
+  height: 180px;
+  object-fit: cover;
+  object-position: top center; /* ⭐ 얼굴이 위에 있다면 이걸로 내려줌 */
+  border-radius: 50%;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+  transition: transform 0.3s ease;
+}
+
+.modal-img:hover {
+  transform: scale(1.05);
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
@@ -194,6 +271,7 @@ section {
 	margin-right:auto;
 	margin-left:auto;
 }
+
 </style>
 <link href="https://hangeul.pstatic.net/hangeul_static/css/NanumMiRaeNaMu.css" rel="stylesheet">
 <section class="about-header section1 fade-up">
@@ -214,37 +292,85 @@ section {
   <h2>Meet Our Team</h2>
   <div class="team-grid">
     
-    <div class="team-member">
+    <div class="team-member"
+    	data-name="박세진"
+    	data-role="Executive Chef"
+    	data-origin="대한민국 서울"
+    	data-education="르 꼬르동 블루 파리"
+    	data-career="미쉐린 2스타 레스토랑 L'Ambroisie 수석 셰프, NOIR 총괄 셰프"
+    	data-description="훌륭한 맛은 발견되는 것이 아닙니다. 조용히, 그리고 천천히 정제됩니다."
+    	data-src="${contextPath}/resources/image/about/박세진 셰프.png">
       <img src="${contextPath}/resources/image/about/박세진 셰프.png" alt="박세진 셰프">
       <h3>박세진</h3>
       <p>Executive Chef</p>
     </div>
     
-    <div class="team-member">
-      <img src="${contextPath}/resources/image/about/이도윤 셰프.png" alt="박세진 셰프">
+    <div class="team-member"
+        data-name="이도윤"
+    	data-role="Chef de Cuisine"
+    	data-origin="대한민국 부산"
+    	data-education="CIA (Culinary Institute of America)"
+    	data-career="뉴욕 Eleven Madison Park, 도쿄 Narisawa"
+    	data-description="동양의 향을 서양의 방식으로 풀어내는 것이 저의 미션입니다."
+    	data-src="${contextPath}/resources/image/about/이도윤 셰프.png">
+      <img src="${contextPath}/resources/image/about/이도윤 셰프.png" alt="이도윤 셰프">
       <h3>이도윤</h3>
       <p>Chef de Cuisine</p>
     </div>
     
-    <div class="team-member">
-      <img src="${contextPath}/resources/image/about/클레어 마르탱 셰프.png" alt="박세진 셰프">
+    <div class="team-member"
+        data-name="클레어 마르탱"
+    	data-role="Pastry Chef"
+    	data-origin="프랑스 리옹"
+    	data-education="Institut Paul Bocuse"
+    	data-career="Ladurée, Pierre Hermé Paris"
+    	data-description="디저트는 기억에 남는 식사의 마지막 선율이죠."
+    	data-src="${contextPath}/resources/image/about/클레어 마르탱 셰프.png">
+      <img src="${contextPath}/resources/image/about/클레어 마르탱 셰프.png" alt="클레어 마르탱 셰프">
       <h3>클레어 마르탱</h3>
       <p>Sous Chef</p>
     </div>
     
-    <div class="team-member">
+    <div class="team-member"
+        data-name="소피아 밀러"
+    	data-role="General Manager"
+    	data-origin="독일 베를린"
+    	data-education="Business Administration, University of Mannheim, Germany"
+    	data-career="베를린 Tim Raue, 런던 Sketch"
+    	data-description="식사는 공간, 서비스, 음식이 만들어내는 종합 예술입니다."
+    	data-src="${contextPath}/resources/image/about/소피아밀러 총지배인.png">
       <img src="${contextPath}/resources/image/about/소피아밀러 총지배인.png" alt="박세진 셰프">
       <h3>소피아 밀러</h3>
       <p>General Manager</p>
     </div>
     
-    <div class="team-member">
+    <div class="team-member"
+        data-name="다니엘 로페즈"
+    	data-role="Head Sommelier"
+    	data-origin="스페인 바르셀로나"
+    	data-education="Court of Master Sommeliers Advanced"
+    	data-career="El Celler de Can Roca, The Fat Duck"
+    	data-description="좋은 와인은 요리의 이야기와 감정을 확장시키는 연출자입니다."
+    	data-src="${contextPath}/resources/image/about/다니엘 로페즈 소믈리에.png">
       <img src="${contextPath}/resources/image/about/다니엘 로페즈 소믈리에.png" alt="박세진 셰프">
       <h3>다니엘 로페즈</h3>
       <p>Head Sommelier</p>
     </div>
   </div>
 </section>
+
+<div id="teamModal" class="modal">
+  <div class="modal-content">
+    <span class="close-btn">&times;</span>
+    <img id="modalImg" src="" alt="Team Member" class="modal-img"/>
+    <h2 id="modalName"></h2>
+    <p id="modalRole"></p>
+    <p id="modalOrigin"></p>
+    <p id="modalEducation"></p>
+    <p id="modalCareer"></p>
+    <p id="modalDescription" class="noir-quote3"></p>
+  </div>
+</div>
 
 <section class="about-philosophy section2 fade-up">
 
@@ -331,6 +457,39 @@ section {
 </script>
 
 <script>
+
+const modal = document.getElementById('teamModal');
+const modalName = document.getElementById('modalName');
+const modalRole = document.getElementById('modalRole');
+const modalOrigin = document.getElementById('modalOrigin');
+const modalEducation = document.getElementById('modalEducation');
+const modalCareer = document.getElementById('modalCareer');
+const modalDescription = document.getElementById('modalDescription');
+const modalImg = document.getElementById('modalImg');
+const closeBtn = document.querySelector('.close-btn');
+
+document.querySelectorAll('.team-member').forEach(member => {
+  member.addEventListener('click', () => {
+    modalName.textContent = member.dataset.name;
+    modalRole.textContent = member.dataset.role;
+    modalOrigin.textContent = member.dataset.origin;
+    modalEducation.textContent = member.dataset.education;
+    modalCareer.textContent = member.dataset.career;
+    modalDescription.textContent = member.dataset.description;
+    modalImg.src = member.dataset.src;  // 여기서 이미지 넣기!
+    modal.style.display = 'flex';
+  });
+});
+
+closeBtn.addEventListener('click', () => {
+  modal.style.display = 'none';
+});
+
+window.addEventListener('click', (e) => {
+  if (e.target === modal) {
+    modal.style.display = 'none';
+  }
+});
 //메인 페이지 페이드아웃 -> 페이드 인 적용 익명 함수
 const observer = new IntersectionObserver(entries => {
     entries.forEach(entry => {
