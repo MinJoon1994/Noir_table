@@ -10,6 +10,62 @@
 
 </script>
 
+<script>
+	document.addEventListener("DOMContentLoaded", () => {
+	  // 알림 수 표시
+	  fetch("${contextPath}/mypage/notification.do")
+	    .then(response => {
+	      if (!response.ok) throw new Error("서버 오류");
+	      return response.json();
+	    })
+	    .then(data => {
+	      if (data.unreadCount > 0) {
+	        document.getElementById("notification-icon").style.display = "block";
+	      }
+	    });
+	
+	  // 알림 아이콘 클릭 이벤트: 모달 열고 알림 내용 로딩
+	  const icon = document.getElementById("notification-icon");
+	  if (icon) {
+	    icon.addEventListener("click", () => {
+	      const modal = document.getElementById("notification-modal");
+	      modal.style.display = "block";
+	
+	      fetch("${contextPath}/mypage/notificationList.do")
+	        .then(response => response.json())
+	        .then(data => {
+	          console.log("불러온 알림 데이터", data);
+	          const list = document.getElementById("notification-list");
+	          list.innerHTML = "";
+	
+	          if (data.length === 0) {
+	            list.innerHTML = "<li>읽지 않은 알림이 없습니다.</li>";
+	          } else {
+	            data.forEach(n => {
+	              const li = document.createElement("li");
+	              
+	              li.style.marginBottom = "10px";
+	              li.innerHTML = `
+	                <div>\${n.reserveDate} \${n.timeSlot}</div>
+	                <div style="font-size: 0.9em; color: #555;">\${n.seatId}번 좌석 예약이 취소되었습니다.</div> 
+	                <div>사유: \${n.message}</div>
+	              `;
+	              list.appendChild(li);
+	            });
+	          }
+	          // 읽음 처리 요청
+	          fetch("${contextPath}/mypage/notificationRead.do", { method: "POST" })
+	          .then(() => {
+	            // 읽음 처리 완료 후 알림 아이콘 숨기기
+	            document.getElementById("notification-icon").style.display = "none";
+	          });
+	        })
+	        .catch(err => console.error("알림 목록 불러오기 실패", err));
+	    });
+	  }
+	});
+</script>
+
 <style>
     header {
         background-color: white;
@@ -132,9 +188,14 @@
             <div class="brand"><a href="${contextPath}/main.do">NOIR</a></div>
             <div class="brand-sub">누아르</div>
         </div>
-
+		
         <!-- 오른쪽: 로그인/회원가입 로그인시엔 회원 이름 -->
         <div class="header-right">
+			<c:if test="${not empty sessionScope.member and sessionScope.member.role eq 'USER'}">
+			  <div id="notification-icon" style="display: none; cursor: pointer;">
+			    <img src="${contextPath}/resources/image/bell_alert.png" alt="알림" width="30px" height="30px" />
+			  </div>
+			</c:if>
         	<c:choose>
 			  <c:when test="${not empty sessionScope.member}">
 			    <div style="display: flex; align-items: center; gap: 10px;">
@@ -166,7 +227,16 @@
     <nav>
         <a href="<c:url value='/about.do'/>">ABOUT</a>
         <a href="<c:url value='/menu/list.do?menuType='/>">MENU</a>
-        <a href="<c:url value='/reservation/form.do'/>">RESERVATION</a>
+        
+        <c:choose>
+		  <c:when test="${sessionScope.member.role eq 'ADMIN'}">
+		    <a href="<c:url value='/reservationAdmin.do'/>">RESERVATION</a>
+		  </c:when>
+		  <c:when test="${sessionScope.member.role eq 'USER'}">
+		    <a href="<c:url value='/reservationUser.do'/>">RESERVATION</a>
+		  </c:when>
+		</c:choose>
+		
         <a href="<c:url value='/gallery.do'/>">GALLERY</a>
         <c:if test="${not empty sessionScope.member}">
 		    <a href="<c:url value='/mypage.do'/>">MYPAGE</a>
@@ -177,6 +247,14 @@
     <!-- 강조용 퍼플 라인 -->
     <div class="divider"></div>
 </header>
+<!-- 알림 모달 -->
+<div id="notification-modal" style="display: none; position: fixed; top: 80px; right: 20px; width: 300px; background: white; border: 1px solid #ccc; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.3); z-index: 999;">
+  <div style="padding: 10px; border-bottom: 1px solid #eee; font-weight: bold;">알림</div>
+  <ul id="notification-list" style="max-height: 300px; overflow-y: auto; list-style: none; padding: 10px; margin: 0;"></ul>
+  <div style="text-align: right; padding: 5px 10px;">
+    <button onclick="document.getElementById('notification-modal').style.display='none';">닫기</button>
+  </div>
+</div>
 </body>
 </html>
 

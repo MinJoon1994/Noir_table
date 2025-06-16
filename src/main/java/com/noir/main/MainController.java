@@ -17,6 +17,8 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.noir.gallery.service.GalleryService;
 import com.noir.gallery.vo.PhotoVO;
+import com.noir.reservation.service.AdminReserveService;
+import com.noir.reservation.vo.CustomerReserveFirstVO;
 
 
 //누아르 식당 메인페이지 네비 관련
@@ -27,6 +29,9 @@ public class MainController {
 	
 	@Autowired
 	GalleryService galleryService;
+	
+	@Autowired
+	AdminReserveService adminReserveService;
 	
 	//메인 페이지
 	@RequestMapping(value= "/main.do" ,method={RequestMethod.POST,RequestMethod.GET})
@@ -57,7 +62,39 @@ public class MainController {
 		
 		return mav;
 	}
-	
+	@RequestMapping(value="/reservationAdmin.do" ,method={RequestMethod.POST,RequestMethod.GET})
+	public ModelAndView reservationAdmin(HttpServletRequest request, HttpServletResponse response) throws Exception{
+		HttpSession session;
+		session=request.getSession();
+				
+		ModelAndView mav=new ModelAndView();
+		
+		String viewName=(String)request.getAttribute("viewName");
+		mav.setViewName(viewName);
+		
+		return mav;
+	}
+	@RequestMapping(value="/reservationUser.do" ,method={RequestMethod.POST,RequestMethod.GET})
+	public ModelAndView reservationUser(HttpServletRequest request, HttpServletResponse response) throws Exception{
+		// 관리자가 등록한 모든 예약 정보
+		List<CustomerReserveFirstVO> customerReserveFirstVOs = adminReserveService.customerReserveFirst();
+		
+		for (CustomerReserveFirstVO vo : customerReserveFirstVOs) {
+		    System.out.println("예약번호: " + vo.getReserve_Id());
+		    System.out.println("식사시간: " + vo.getMeal_Time());
+		    System.out.println("예약날짜: " + vo.getReserve_Date());
+		    System.out.println("시간대: " + vo.getTime_Slot());
+		    System.out.println("생성일: " + vo.getCreated_At());
+		    System.out.println("----------------------------");
+		}
+		
+		ModelAndView mav=new ModelAndView();
+		
+		String viewName=(String)request.getAttribute("viewName");
+		mav.addObject("reserveList", customerReserveFirstVOs);
+		mav.setViewName(viewName);
+		return mav;
+	}
 	
 	//갤러리 페이지
 	@RequestMapping(value= "/gallery.do" ,method={RequestMethod.POST,RequestMethod.GET})

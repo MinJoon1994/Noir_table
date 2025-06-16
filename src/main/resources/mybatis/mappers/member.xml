@@ -96,9 +96,19 @@
 		SELECT COUNT(*) FROM NOIR_MEMBER WHERE LOGIN_ID = #{loginId}
 	</select>
 	
-	<select id="login" parameterType="map" resultMap="memberResult">
-	    SELECT * FROM NOIR_MEMBER 
-	    WHERE LOGIN_ID = #{login_id} AND PASSWORD = #{password}
+
+	<select id="login" parameterType="map" resultType="com.noir.member.vo.MemberVO">
+	    SELECT 
+	        member_id AS id,
+	        login_id,
+	        password,
+	        name,
+	        phone,
+	        role,
+	        social_type,
+	        sns_id,
+	        profileImage
+	    FROM NOIR_MEMBER 
 	</select>
 	
 	<select id="findByKakaoId" parameterType="String" resultMap="memberResult">
