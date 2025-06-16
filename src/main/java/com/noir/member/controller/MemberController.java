@@ -1,7 +1,9 @@
 package com.noir.member.controller;
 
+import java.io.File;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -22,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.context.support.HttpRequestHandlerServlet;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -156,6 +159,8 @@ public class MemberController {
 		HttpSession session = req.getSession();
 		session.setAttribute("member", member);
 		
+		System.out.println(member.getId());
+		
 		mav.setViewName("redirect:/main.do");
 		
 		return mav;
@@ -240,6 +245,8 @@ public class MemberController {
 		
 		HttpSession session = req.getSession();
 		session.setAttribute("member", member);
+		
+		System.out.println(member.getId());
 		
 		mav.setViewName("redirect:/main.do");
 		
@@ -367,6 +374,77 @@ public class MemberController {
 		if(member.getPhone()!=null) mav.setViewName("redirect:/main.do");
 		
 		return mav;
+	}
+	
+	//멤버 개인정보 수정 페이지
+	@RequestMapping("/editPage.do")
+	public ModelAndView editPage(HttpServletRequest req,HttpServletResponse resp) {
+		
+		ModelAndView mav = new ModelAndView();
+		
+		HttpSession session = req.getSession();
+
+	
+		String viewName = (String)req.getAttribute("viewName");
+		mav.setViewName(viewName);
+		
+		return mav;
+	}
+	
+	@RequestMapping("/update.do")
+	public ModelAndView updateMember(HttpServletRequest req,
+									 @RequestParam("name") String name,
+									 @RequestParam("password") String password,
+	                                 @RequestParam(value = "profileImage", required = false) MultipartFile profileImage,
+	                                 HttpSession session) throws Exception{
+		
+	    ModelAndView mav = new ModelAndView();
+
+	    // 세션에서 현재 멤버 가져오기
+	    MemberVO member = (MemberVO) session.getAttribute("member");
+	    
+	    // 비밀번호 변경
+	    if (password != null && !password.trim().isEmpty()) {
+	        member.setPassword(password);
+	    }
+	    
+	    // 이름 변경
+	    member.setName(name);
+	    
+	    // 프로필 이미지 업로드 처리
+	    if (profileImage != null && !profileImage.isEmpty()) {
+	        String uploadDir = "C:/upload/noir/profile/";
+	        File dir = new File(uploadDir);
+	        if (!dir.exists()) dir.mkdirs(); // 디렉토리 없으면 생성
+
+	        String originalFilename = profileImage.getOriginalFilename();
+	        String uuid = UUID.randomUUID().toString();
+	        String savedName = uuid + "_" + originalFilename;
+
+	        File target = new File(uploadDir + savedName);
+	        profileImage.transferTo(target);
+
+	        // DB에는 파일 이름만 저장 (경로는 저장 안 함)
+	        member.setProfileImage(savedName);
+	    }
+	    
+	    System.out.println(member.getId());
+	    System.out.println(member.getLogin_id());
+	    System.out.println(member.getName());
+	    System.out.println(member.getPassword());
+	    System.out.println(member.getPhone());
+	    System.out.println(member.getProfileImage());
+	    System.out.println(member.getSocial_type());
+	    
+	    // TODO: 서비스 호출해서 DB 업데이트
+	    memberService.updateMember(member);
+	    
+	    // 세션도 갱신
+	    session.setAttribute("member", member);
+	    
+	    mav.setViewName("redirect:/member/editPage.do"); // 예: 마이페이지로 이동
+	    
+	    return mav;
 	}
 	
 }

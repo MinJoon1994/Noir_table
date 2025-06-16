@@ -58,9 +58,6 @@ public class MemberService {
 			req.setAttribute("errorMsg", "비밀번호가 틀렸습니다.");
 		}
 		
-		if(member.getProfileImage()==null) {
-			member.setProfileImage("/resources/image/noir_icon.png");
-		}
 		
 		return member;
 		
@@ -158,6 +155,12 @@ public class MemberService {
 		String snsId = member.getSns_id();
 		
 		memberDAO.saveGooglePhone(phone,snsId);
+		
+	}
+
+	public void updateMember(MemberVO member) {
+		
+		memberDAO.updateMember(member);
 		
 	}
 }

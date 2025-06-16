@@ -96,7 +96,7 @@
 		SELECT COUNT(*) FROM NOIR_MEMBER WHERE LOGIN_ID = #{loginId}
 	</select>
 	
-	<select id="login" parameterType="map" resultType="com.noir.member.vo.MemberVO">
+	<select id="login" parameterType="map" resultMap="memberResult">
 	    SELECT * FROM NOIR_MEMBER 
 	    WHERE LOGIN_ID = #{login_id} AND PASSWORD = #{password}
 	</select>
@@ -132,5 +132,15 @@
 		  UPDATE NOIR_MEMBER
 		  SET PHONE = #{phone}
 		  WHERE SNS_ID = #{snsId}
+	</update>
+	
+	<update id="updateMember" parameterType="map">
+		  UPDATE NOIR_MEMBER
+		  SET 
+		    PASSWORD = #{password},
+		    NAME = #{name},
+		    PHONE = #{phone},
+		    PROFILEIMAGE = #{profileImage}
+		  WHERE MEMBER_ID = #{id}
 	</update>
 </mapper>

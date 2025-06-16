@@ -51,7 +51,8 @@ public class MemberDAO {
 		sqlSession.insert("mapper.member.insertGoogleMember",memberVO);
 		
 	}
-
+	
+	//7.구글 로그인 회원 전화번호 등록
 	public void saveGooglePhone(String phone, String snsId) {
 		
 		Map<String,String> map = new HashMap<>();
@@ -59,6 +60,13 @@ public class MemberDAO {
 		map.put("snsId", snsId);
 		
 		sqlSession.update("mapper.member.saveGooglePhone",map);
+		
+	}
+	
+	//8.회원 개인정보 수정
+	public void updateMember(MemberVO member) {
+		
+		sqlSession.update("mapper.member.updateMember",member);
 		
 	}
 
