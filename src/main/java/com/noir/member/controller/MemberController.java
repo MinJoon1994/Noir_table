@@ -156,6 +156,11 @@ public class MemberController {
 		HttpSession session = req.getSession();
 		session.setAttribute("member", member);
 		
+		MemberVO members = (MemberVO) session.getAttribute("member");
+		Integer memberId = members.getId();
+		System.out.println("로그인한 member 객체 : " + members);
+		System.out.println("로그인한 memberid : " + memberId);
+		
 		mav.setViewName("redirect:/main.do");
 		
 		return mav;

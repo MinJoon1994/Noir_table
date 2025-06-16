@@ -95,7 +95,7 @@
 
 <header class="slim-header">
   <div class="slim-nav-container">
-  
+  	
   	<!-- 왼쪽 브랜드 -->
     <div class="slim-brand">
       <img class="slim-brand-icon" src="${contextPath}/resources/image/noir_icon.png" alt="NOIR Icon">

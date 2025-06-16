@@ -16,10 +16,11 @@
   <style>
 	  .container {
 	    width: 1017px;
+	    height: 745px;
 	    display: flex;
-	    margin: 40px auto 0;
+	    margin: 10px auto 20px;
 	  }
-    .step-menu { background-color: #e60113; color: white; flex: 1; display: flex; flex-direction: column; }
+    .step-menu { height:736px; background-color: #e60113; color: white; flex: 1; display: flex; flex-direction: column; }
     .step-menu div { padding: 79.4px 17px; cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.2); }
     .step-menu div.active { background-color: #a00010; }
     .main-container { width: 887px; display: flex; flex-direction: column; background-color: #f9f9f9; border: 1px solid black;}

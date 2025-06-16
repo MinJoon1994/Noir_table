@@ -100,8 +100,11 @@ public class AdminReserveDAOImpl implements AdminReserveDAO {
 	
 	// 예약한 좌석 테이블 번호 조회
 	@Override
-	public List<Integer> getReservedSeats(int reserveId) {
-		return sqlSession.selectList("mappers.customerReserve.selectAllReservedSeats", reserveId);
+	public List<Integer> getReservedSeats(Integer reserveId, Integer memberId) {
+		Map<String, Integer> paramMap = new HashMap<String, Integer>();
+		paramMap.put("reserveId", reserveId);
+		paramMap.put("memberId", memberId);
+		return sqlSession.selectList("mappers.customerReserve.selectAllReservedSeats", paramMap);
 	}
 
 	// 잔액 확인

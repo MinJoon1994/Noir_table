@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.noir.member.vo.MemberVO;
 import com.noir.reservation.service.AdminReserveService;
 import com.noir.reservation.vo.CustomerGetReserveInfoVO;
 import com.noir.reservation.vo.CustomerReserveFirstVO;
@@ -36,6 +37,10 @@ public class ReservationUserController {
 	            @RequestParam("reserveId") int reserveId,
 	            HttpServletRequest request) {
 			
+			HttpSession session = request.getSession();
+			MemberVO member = (MemberVO) session.getAttribute("member");
+			Integer memberId = member.getId();
+			
 	        ModelAndView mav = new ModelAndView(); // JSP: /WEB-INF/views/customer/customerReserveFirst.jsp
 	        
 	        List<RestaurantSeatVO> restaurantSeatVOs = adminReserveService.getAllSeats();
@@ -49,8 +54,7 @@ public class ReservationUserController {
 	        // 전체 좌석 목록
 	        mav.addObject("seatList", restaurantSeatVOs);
 	        
-	        //
-	        List<Integer> reservedSeatsId = adminReserveService.getReservedSeats(reserveId); 
+	        List<Integer> reservedSeatsId = adminReserveService.getReservedSeats(reserveId, memberId); 
 	        mav.addObject("reservedSeatsId", reservedSeatsId);
 	        
 	        mav.addObject("floor", floor);
@@ -74,7 +78,11 @@ public class ReservationUserController {
 	            @RequestParam("time") String time,
 	            @RequestParam("reserveId") int reserveId,
 	            HttpServletRequest request) {
-
+			
+			HttpSession session = request.getSession();
+			MemberVO member = (MemberVO) session.getAttribute("member");
+			Integer memberId = member.getId();
+			
 			ModelAndView mav = new ModelAndView(); // JSP: /WEB-INF/views/customer/customerReserveSecond.jsp
 
 			List<RestaurantSeatVO> restaurantSeatVOs = adminReserveService.getAllSeats();
@@ -88,7 +96,7 @@ public class ReservationUserController {
 	        }
 	        mav.addObject("seatList", restaurantSeatVOs);
 
-	        List<Integer> reservedSeatsId = adminReserveService.getReservedSeats(reserveId); 
+	        List<Integer> reservedSeatsId = adminReserveService.getReservedSeats(reserveId, memberId); 
 	        mav.addObject("reservedSeatsId", reservedSeatsId);
 	        
 	        mav.addObject("floor", floor);
@@ -141,8 +149,9 @@ public class ReservationUserController {
 				HttpSession session = request.getSession();
 				session.setAttribute("reserveId", reserveId);
 				session.setAttribute("seatId", seatId);
-				//Integer memberId = (Integer) session.getAttribute("memberId");
-				Integer memberId = Integer.parseInt("15");
+				MemberVO member = (MemberVO) session.getAttribute("member");
+				Integer memberId = member.getId();
+				System.out.println("memberid : " + memberId);
 				
 				// 트랜잭션
 				adminReserveService.reserveAndPay(seatId, reserveId, totalPrice, memberId);
@@ -166,9 +175,8 @@ public class ReservationUserController {
 			
 			
 			HttpSession session = request.getSession();
-		    // 고객 아이디 꺼내오기
-		    //Integer memberId = (Integer) session.getAttribute("memberId");
-		    Integer memberId = Integer.parseInt("15");
+			MemberVO member = (MemberVO) session.getAttribute("member");
+			Integer memberId = member.getId();
 		    Integer reserveId = (Integer) session.getAttribute("reserveId");
 		    Integer seatId = (Integer) session.getAttribute("seatId");
 		    //logger.info("memberId : " + memberId);

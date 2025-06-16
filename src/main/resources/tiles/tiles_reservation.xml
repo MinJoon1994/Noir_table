@@ -27,4 +27,8 @@
 		<put-attribute name="header" value="/WEB-INF/views/common/main_header.jsp" />
 		<put-attribute name="body" value="/WEB-INF/views/user/customerReserveFour.jsp" />
 	</definition>
+	
+	<definition name="common/alert" template="/WEB-INF/views/layout/baseLayout.jsp">
+	    <put-attribute name="body" value="/WEB-INF/views/common/alert.jsp" />
+	</definition>
 </tiles-definitions>

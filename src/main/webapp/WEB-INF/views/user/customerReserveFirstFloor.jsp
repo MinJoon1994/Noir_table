@@ -11,10 +11,10 @@
   .main-container {
     width: 1017px;
     display: flex;
-    margin: 40px auto 0;
+    margin: 10px auto 20px;
   }
   .side-container {
-  	margin-top: 40px;
+  	margin-top: 5px;
   	width: 130px;
   }
   .step-menu { background-color: #e60113; color: white; flex: 1; display: flex; flex-direction: column; }
@@ -24,7 +24,7 @@
     width: 887px;
     display: flex;
     flex-direction: column;
-    margin: 40px auto 0;
+    margin: 5px auto 0;
     border: 1px solid black;
   }
   .info-space {
@@ -82,16 +82,16 @@
     pointer-events: none;
   }
   .next-btn {
-  position: absolute;
-  bottom: 10px;
-  right: 10px;
-  padding: 10px 20px;
-  background-color: #00509e;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-}
+	  position: absolute;
+	  bottom: 10px;
+	  right: 10px;
+	  padding: 10px 20px;
+	  background-color: #00509e;
+	  color: white;
+	  border: none;
+	  border-radius: 5px;
+	  cursor: pointer;
+	}
 </style>
 </head>
 <body>

@@ -9,6 +9,10 @@
   <meta charset="UTF-8">
   <title>예약 등록</title>
   <style>
+  	.main-container {
+  	  width: 620px;
+      margin: 5px auto 0;
+	}
     body {
       font-family: Arial;
       margin: 30px;
@@ -32,7 +36,7 @@
   </style>
 </head>
 <body>
-
+<div class="main-container">
   <h2>예약 등록</h2>
 
   <form id="reserveForm" action="${contextPath}/reservationAdmin/addReserve.do" method="POST">
@@ -94,6 +98,6 @@
       });
     });
   </script>
-
+</div>
 </body>
 </html>
