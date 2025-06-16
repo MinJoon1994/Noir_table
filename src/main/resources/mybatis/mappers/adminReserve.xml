@@ -57,6 +57,7 @@
 	    SELECT AMOUNT
 	    FROM PAYMENT_TRANSACTION
 	    WHERE CUSTOMER_ID = #{customerId}
+	    
 	</select>
 	
 	<!-- 환불 거래 내역 추가 -->

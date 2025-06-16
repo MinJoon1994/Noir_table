@@ -200,7 +200,12 @@
 	    inputPlaceholder: '사유를 입력해주세요',
 	    showCancelButton: true,
 	    confirmButtonText: '확인',
-	    cancelButtonText: '닫기'
+	    cancelButtonText: '닫기',
+    	inputValidator: (value) => {
+    	    if (!value || value.trim() === '') {
+   		      return '⚠ 사유를 반드시 입력해주세요!';
+   		    }
+  		}
 	  }).then((result) => {
 	    if (result.isConfirmed) {
 	      const selected = reservedSeatList.find(item => item.seatId == seatId);

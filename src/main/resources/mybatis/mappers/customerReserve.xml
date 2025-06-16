@@ -28,11 +28,10 @@
     </select>
     
     <!-- 예약한 좌석 번호 전체 조회 -->
-	<select id="selectAllReservedSeats" parameterType="map" resultType="int">
+	<select id="selectAllReservedSeats" parameterType="int" resultType="int">
 	    SELECT SEAT_ID
 	    FROM CUSTOMER_RESERVATION
 	    WHERE RESERVE_ID = #{reserveId}
-	    AND MEMBER_ID = #{memberId}
 	    AND STATUS = 'ACTIVE'
 	</select>
     
@@ -136,6 +135,7 @@
 	    WHERE cr.MEMBER_ID = #{memberId}
 	      AND cr.RESERVE_ID = #{reserveId}
 	      AND cr.SEAT_ID = #{seatId}
+	      AND cr.STATUS = 'ACTIVE'
 	</select>
 	
 	<select id="getCustomerId" parameterType="map" resultType="int">

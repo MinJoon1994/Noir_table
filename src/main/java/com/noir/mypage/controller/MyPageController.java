@@ -89,7 +89,7 @@ public class MyPageController {
 			
 		} catch (Exception e) {
 			//logger.error("예약 삭제 중 오류 발생", e);
-			return "errorPage";
+			e.printStackTrace();
 		}
 		return "redirect:/mypage/getReserve.do";
 	}
@@ -188,6 +188,7 @@ public class MyPageController {
 	    result.put("unreadCount", (int) unreadCount);
 	    return result;
 	}
+	// 알림 조회
 	@ResponseBody
 	@RequestMapping(value="notificationList.do", method=RequestMethod.GET)
 	public List<NotificationVO> getUnreadNotifications(HttpServletRequest request, HttpServletResponse response) {
