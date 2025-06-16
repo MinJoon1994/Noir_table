@@ -30,10 +30,10 @@
     .main-container {
       width: 1017px;
       display: flex;
-      margin: 40px auto 0;
+      margin: 10px auto 20px;
     }
     .side-container {
-  	  margin-top: 40px;
+  	  margin-top: 5px;
   	  width: 130px;
     }
     .step-menu { background-color: #e60113; color: white; flex: 1; display: flex; flex-direction: column; }
@@ -41,10 +41,9 @@
     .step-menu div.active { background-color: #a00010; }
     .container {
       width: 887px;
-      height: 728px;
       display: flex;
       flex-direction: column;
-      margin: 40px auto 0;
+      margin: 5px auto 0;
       border: 1px solid black;
     }
     .main-reservation {

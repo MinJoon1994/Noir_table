@@ -37,6 +37,10 @@
 	<typeAlias type="com.noir.reservation.vo.AdminReservationVO" alias="AdminReservationVO" />
 	<typeAlias type="com.noir.reservation.vo.SeatVO" alias="SeatVO" />
 	<typeAlias type="com.noir.reservation.vo.CustomerGetReserveInfoVO" alias="CustomerGetReserveInfoVO" />
+	
+	<typeAlias type="com.noir.mypage.vo.CustomerReservationVO" alias="CustomerReservationVO" />
+	<typeAlias type="com.noir.mypage.vo.NoirMemberVO" alias="NoirMemberVO" />
+	<typeAlias type="com.noir.mypage.vo.NotificationVO" alias="NotificationVO" />
   </typeAliases>
 
   <!--
