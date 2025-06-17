@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=utf-8" pageEncoding="utf-8" isELIgnored="false" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <c:set var="contextPath" value="${pageContext.request.contextPath}" />
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 <style>
 .editContainer {
@@ -103,23 +104,30 @@
 
 <div class="editContainer fade-up">
 	
-	<!-- 프로필 이미지 영역 -->
+  <!-- 사용자 정보 수정 인풋 필드 -->
+  <form action="${contextPath}/member/update.do" method="post" enctype="multipart/form-data">
+    <!-- 프로필 이미지 영역 -->
 	<div class="profile-wrap fade-up">
+	 <c:choose>
+
+	    <c:when test="${fn:startsWith(sessionScope.member.profileImage, 'http')}">
+	      <c:set var="profileSrc" value="${sessionScope.member.profileImage}" />
+	    </c:when>
+	
+
+	    <c:when test="${not empty sessionScope.member.profileImage}">
+	      <c:set var="profileSrc" value="${contextPath}/upload/profile/${sessionScope.member.profileImage}" />
+	    </c:when>
+	
+
+	    <c:otherwise>
+	      <c:set var="profileSrc" value="${contextPath}/resources/image/noir_icon.png" />
+	    </c:otherwise>
+	  </c:choose>
+	
 	  <img id="profilePreview"
 	       class="profile-img"
-	       src="<c:choose>
-	              <c:when test='${not empty sessionScope.member.social_type}'>
-	                ${sessionScope.member.profileImage}
-	              </c:when>
-	              <c:when test='${empty sessionScope.member.social_type}'>
-		              <c:when test='${not empty sessionScope.member.profileImage}'>
-		              	${contextPath}${sessionScope.member.profileImage}
-		              </c:when>
-	              </c:when>
-	              <c:otherwise>
-	                ${contextPath}/resources/image/noir_icon.png
-	              </c:otherwise>
-	            </c:choose>"
+	       src="${profileSrc}"
 	       alt="프로필 이미지" />
 	
 	  <!-- 숨김 파일 업로드 인풋 -->
@@ -130,10 +138,7 @@
 	  <button type="button" class="change-btn"
 	          onclick="document.getElementById('profileImageInput').click();">사진 변경</button>
 	</div>
-
-  <!-- 사용자 정보 수정 인풋 필드 -->
-  <form action="${contextPath}/member/update.do" method="post" enctype="multipart/form-data">
-    
+	
     <!-- 로그인 아이디 (읽기전용) -->
     <div class="input-label">아이디</div>
     <div class="input-field" style="background-color:#f2f2f2; cursor: default;">

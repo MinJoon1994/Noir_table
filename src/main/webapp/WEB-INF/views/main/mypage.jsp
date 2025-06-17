@@ -124,7 +124,7 @@
   <c:if test="${sessionScope.member.role eq 'USER'}">
     <button class="noir-btn" onclick="location.href='${contextPath}/mypage/getReserveCustomer.do'">내 예약 보기</button>
     <button class="noir-btn" onclick="location.href='${contextPath}/이동할/경로'">내 리뷰 보기</button>
-    <button class="noir-btn" onclick="location.href='${contextPath}/mypage/editPage.do'">개인정보 수정</button>
+    <button class="noir-btn" onclick="location.href='${contextPath}/member/editPage.do'">개인정보 수정</button>
 
     <!-- 소셜 미연동 회원 -->
     <c:if test="${sessionScope.member.social_type eq null}">

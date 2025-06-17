@@ -4,6 +4,7 @@
     %>
 <%@ taglib uri="http://tiles.apache.org/tags-tiles" prefix="tiles" %>    
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <c:set var="contextPath"  value="${pageContext.request.contextPath}" />
 
 <script type="text/javascript">
@@ -115,22 +116,22 @@
     </nav>
     
 	<c:choose>
-	  <c:when test="${not empty sessionScope.member}">
-	    <div style="display: flex; align-items: center; gap: 10px;">
-		  <div class="profile-wrapper">
-		  	<c:if test="${not empty sessionScope.member.social_type}">
-		      <img src="${sessionScope.member.profileImage}"
-		           alt="프로필 이미지">
-		     </c:if>
-		     <c:if test="${empty sessionScope.member.social_type}">
-		     	<img src="${contextPath}${sessionScope.member.profileImage}"
-		           alt="프로필 이미지">
-		     </c:if>
-	      </div>
-	      <span style="font-weight: bold;">${sessionScope.member.name} 님</span>
-	      <a href="<c:url value='/member/logout.do'/>" class="header-link">로그아웃</a>
-	    </div>
-	  </c:when>
+		<c:when test="${not empty sessionScope.member}">
+		  <div style="display: flex; align-items: center; gap: 10px;">
+		    <div class="profile-wrapper">
+		        <c:choose>
+		          <c:when test="${fn:startsWith(sessionScope.member.profileImage, 'http')}">
+		            <img src="${sessionScope.member.profileImage}" alt="프로필 이미지">
+		          </c:when>
+		          <c:otherwise>
+		            <img src="${contextPath}/upload/profile/${sessionScope.member.profileImage}" alt="프로필 이미지">
+		          </c:otherwise>
+		        </c:choose>
+		    </div>
+		    <span style="font-weight: bold;">${sessionScope.member.name} 님</span>
+		    <a href="<c:url value='/member/logout.do'/>" class="header-link">로그아웃</a>
+		  </div>
+		</c:when>
 	  <c:otherwise>
 	  	<div style="display: flex; align-items: center; gap: 10px;">
 		    <a href="<c:url value='/member/loginForm.do'/>" class="header-link">로그인</a>

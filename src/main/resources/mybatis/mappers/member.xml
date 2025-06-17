@@ -108,7 +108,8 @@
 	        social_type,
 	        sns_id,
 	        profileImage
-	    FROM NOIR_MEMBER 
+	    FROM NOIR_MEMBER
+	    WHERE LOGIN_ID = #{login_id} AND PASSWORD = #{password}
 	</select>
 	
 	<select id="findByKakaoId" parameterType="String" resultMap="memberResult">
@@ -150,7 +151,7 @@
 		    PASSWORD = #{password},
 		    NAME = #{name},
 		    PHONE = #{phone},
-		    PROFILEIMAGE = #{profileImage}
+		    PROFILEIMAGE = #{profileImage,jdbcType=VARCHAR}
 		  WHERE MEMBER_ID = #{id}
 	</update>
 </mapper>

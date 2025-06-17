@@ -167,27 +167,27 @@ public class MyPageController {
 	    out.flush();
 	}
 	// 알림 확인
-	@ResponseBody
-	@RequestMapping(value="/notification.do", method=RequestMethod.GET)
-	public Map<String, Integer> getUnreadNotificationCount(HttpServletRequest request, HttpServletResponse response) {
-		HttpSession session = request.getSession();
-		MemberVO member = (MemberVO) session.getAttribute("member");
-		Integer memberId = member.getId();
-		
-	    List<NotificationVO> notificationVOs = myPageService.getNotification(memberId);
-	    // 안 읽은 알림 수 계산 (isRead == 0)
-	    long unreadCount = notificationVOs.stream()
-	        .filter(n -> n.getIsRead() == 0)
-	        .count();
-	    for (NotificationVO n : notificationVOs) {
-	        System.out.println("→ 알림 ID: " + n.getNotificationId() + ", isRead: " + n.getIsRead());
-	    }
-	    System.out.println("unreadCount는 : " + unreadCount);
-	    
-	    Map<String, Integer> result = new HashMap<>();
-	    result.put("unreadCount", (int) unreadCount);
-	    return result;
-	}
+//	@ResponseBody
+//	@RequestMapping(value="/notification.do", method=RequestMethod.GET)
+//	public Map<String, Integer> getUnreadNotificationCount(HttpServletRequest request, HttpServletResponse response) {
+//		HttpSession session = request.getSession();
+//		MemberVO member = (MemberVO) session.getAttribute("member");
+//		Integer memberId = member.getId();
+//		
+//	    List<NotificationVO> notificationVOs = myPageService.getNotification(memberId);
+//	    // 안 읽은 알림 수 계산 (isRead == 0)
+//	    long unreadCount = notificationVOs.stream()
+//	        .filter(n -> n.getIsRead() == 0)
+//	        .count();
+//	    for (NotificationVO n : notificationVOs) {
+//	        System.out.println("→ 알림 ID: " + n.getNotificationId() + ", isRead: " + n.getIsRead());
+//	    }
+//	    System.out.println("unreadCount는 : " + unreadCount);
+//	    
+//	    Map<String, Integer> result = new HashMap<>();
+//	    result.put("unreadCount", (int) unreadCount);
+//	    return result;
+//	}
 	@ResponseBody
 	@RequestMapping(value="notificationList.do", method=RequestMethod.GET)
 	public List<NotificationVO> getUnreadNotifications(HttpServletRequest request, HttpServletResponse response) {
