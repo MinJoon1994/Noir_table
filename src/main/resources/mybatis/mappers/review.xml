@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<!--
+	[MyBatis Mapper 파일]
+	- 이 파일은 SQL 쿼리와 Java 객체를 연결하는 역할을 합니다.
+	- namespace는 해당 Mapper와 연결된 인터페이스 경로입니다.
+	- 예: mapper.admin.goods => mapper.admin.goods 인터페이스와 매핑됨
+-->
+<mapper namespace="mapper.review"> <!-- 이름 본인이 필요한걸로 반드시 바꾸세요 -->
+	
+	<!--
+	=========================================================
+		✅ 1. ResultMap 정의 영역
+	 	 - DB 테이블 컬럼 → VO/DTO 클래스 필드 매핑
+		 - 복잡한 조인 결과나 별칭(alias)을 사용할 때 유용
+		 - resultMap 태그를 사용
+		예시:
+		<resultMap id="goodsResultMap" type="GoodsVO">
+			<id property="goodsId" column="goods_id"/>
+			<result property="name" column="goods_name"/>
+	 		...
+		</resultMap>
+	 ==========================================================
+	 -->
+	<resultMap id="reviewMap" type="com.noir.review.vo.ReviewVO">
+		<id property="reviewId" column="review_id"/>
+		<result property="title" column="title"/>
+		<result property="content" column="content"/>
+		<result property="rating" column="rating"/>
+		<result property="reservationId" column="reservation_id"/>
+		<result property="reservationDate" column="reservation_date"/>
+		<result property="mealType" column="meal_type"/>
+	</resultMap>
+
+
+	<!--
+	=========================================================
+		✅ 2. SQL 매핑 영역
+		 - 실제 SQL 쿼리와 해당 id 값을 지정해서 Mapper 인터페이스와 연결
+		 - 사용 가능한 태그:
+		   - <select>   : 조회 (SELECT)
+		   - <insert>   : 삽입 (INSERT)
+		   - <update>   : 수정 (UPDATE)
+		   - <delete>   : 삭제 (DELETE)
+		예시:
+		<select id="selectAllGoods" resultType="GoodsVO">
+			SELECT * FROM noir_menu
+		</select>
+	========================================================== 
+	-->
+
+
+	<!--   리뷰 리스트 (예약정보 JOIN) 페이징 쿼리 추가 -->
+	<select id="selectReviewsByPaging" resultMap="reviewMap" parameterType="map">
+	    SELECT * FROM (
+	        SELECT inner_query.*, ROWNUM rn
+	        FROM (
+	            SELECT r.review_id, r.title, r.content, r.rating, r.reservation_id,
+	                   res.reservation_date, res.meal_type
+	            FROM noir_review r
+	            LEFT JOIN noir_reservation res ON r.reservation_id = res.reservation_id
+	            ORDER BY r.review_id DESC
+	        ) inner_query
+	        WHERE ROWNUM &lt;= #{offset} + #{limit}
+	    )
+	    WHERE rn &gt; #{offset}
+	</select>	
+
+	<!-- 전체 카운트 쿼리 추가 -->
+	<select id="selectReviewCount" resultType="int">
+	    SELECT COUNT(*) FROM noir_review
+	</select>
+
+	<!-- 리뷰 상세 (예약정보 JOIN) -->
+	<select id="selectReviewById" resultMap="reviewMap">
+		SELECT r.*, res.reservation_date, res.meal_type
+		FROM noir_review r
+		LEFT JOIN noir_reservation res ON r.reservation_id = res.reservation_id
+		WHERE r.review_id = #{reviewId}
+	</select>
+	<!-- 상세페이지 다음글 -->
+	<select id="selectPrevReview" parameterType="long" resultMap="reviewMap">
+        SELECT *
+        FROM (
+            SELECT r.*, res.reservation_date, res.meal_type
+            FROM noir_review r
+            LEFT JOIN noir_reservation res ON r.reservation_id = res.reservation_id
+            WHERE r.review_id &lt; #{reviewId}
+            ORDER BY r.review_id DESC
+        )
+        WHERE ROWNUM = 1
+	</select>
+	<!-- 상세페이지 다음글 -->
+	<select id="selectNextReview" parameterType="long" resultMap="reviewMap">
+        SELECT *
+        FROM (
+            SELECT r.*, res.reservation_date, res.meal_type
+            FROM noir_review r
+            LEFT JOIN noir_reservation res ON r.reservation_id = res.reservation_id
+            WHERE r.review_id &gt; #{reviewId}
+            ORDER BY r.review_id ASC
+        )
+        WHERE ROWNUM = 1
+	</select>
+
+
+	<!-- 리뷰 등록 (리뷰ID 반환) -->
+	<insert id="insertReview" parameterType="com.noir.review.vo.ReviewVO" useGeneratedKeys="true" keyProperty="reviewId">
+		INSERT INTO noir_review (review_id, title, content, rating, reservation_id)
+		VALUES (noir_review_seq.NEXTVAL, #{title}, #{content}, #{rating}, #{reservationId})
+		<selectKey resultType="long" order="AFTER" keyProperty="reviewId">
+			SELECT noir_review_seq.CURRVAL FROM DUAL
+		</selectKey>
+	</insert>
+
+	<!-- 리뷰 수정 -->
+	<update id="updateReview" parameterType="com.noir.review.vo.ReviewVO">
+		UPDATE noir_review
+		SET title=#{title}, content=#{content}, rating=#{rating}
+		WHERE review_id=#{reviewId}
+	</update>
+
+	<!-- 리뷰 삭제 -->
+	<delete id="deleteReview" parameterType="long">
+		DELETE FROM noir_review WHERE review_id = #{reviewId}
+	</delete>
+
+	<!-- 리뷰 이미지 등록 (여러번 호출됨) -->
+	<insert id="insertReviewPhoto" parameterType="map">
+		INSERT INTO noir_photo (photo_id, review_id, photo_url, photo_type)
+		VALUES (noir_photo_seq.NEXTVAL, #{reviewId}, #{photoUrl}, 'GALLERY')
+	</insert>
+
+	<!-- 특정 리뷰의 이미지 전체 삭제 (수정 시 사용) -->
+	<delete id="deleteReviewPhotos" parameterType="long">
+		DELETE FROM noir_photo WHERE review_id = #{reviewId}
+	</delete>
+
+	<!-- 특정 리뷰의 모든 이미지 URL 목록 -->
+	<select id="selectReviewPhotos" parameterType="long" resultType="string">
+		SELECT photo_url FROM noir_photo WHERE review_id = #{reviewId}
+	</select>
+</mapper>
