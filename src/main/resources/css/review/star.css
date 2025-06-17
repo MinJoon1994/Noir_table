@@ -1,0 +1,27 @@
+@charset "UTF-8";
+
+.review-table th, .review-table td {
+  padding: 12px;
+  border-bottom: 1px solid #e5e5e5;
+}
+.review-table tr:hover {
+  background: #f4f7fd;
+}
+.fa-star {
+  transition: transform 0.15s;
+}
+.fa-star:hover {
+  transform: scale(1.2) rotate(-10deg);
+  color: #ffbc42 !important;
+}
+.btn-review {
+  display: inline-block;
+  background: #0057b7;
+  color: white;
+  border-radius: 8px;
+  padding: 8px 22px;
+  text-decoration: none;
+  margin-top: 18px;
+  font-size: 1.1em;
+}
+.btn-review:hover { background: #003d8f; }

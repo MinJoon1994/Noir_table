@@ -1,0 +1,10 @@
+@charset "UTF-8";
+
+.thumb-img {
+	border-radius: 8px;
+	width: 80px;
+	transition: transform 0.2s ease-in-out;
+}
+.thumb-img:hover {
+	transform: scale(1.5);
+}
