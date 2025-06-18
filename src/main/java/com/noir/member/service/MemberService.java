@@ -146,7 +146,7 @@ public class MemberService {
 		return member; 
 	}
 
-	public void saveGooglePhone(HttpServletRequest req, String phone) {
+	public MemberVO saveGooglePhone(HttpServletRequest req, String phone) {
 		
 		HttpSession session = req.getSession();
 		
@@ -156,11 +156,51 @@ public class MemberService {
 		
 		memberDAO.saveGooglePhone(phone,snsId);
 		
+		member.setPhone(phone);
+		
+		return member;
+		
 	}
 
 	public void updateMember(MemberVO member) {
 		
 		memberDAO.updateMember(member);
 		
+	}
+	
+	//카카오 소셜 로그인 연동
+	public MemberVO registerKakaolink(MemberVO member, KakaoProfile kakaoProfile) {
+
+		member.setProfileImage(kakaoProfile.getKakao_account().getProfile().getProfile_image_url());
+		member.setSocial_type("KAKAO");
+		member.setSns_id(kakaoProfile.getId()+"");
+		
+		memberDAO.snslink(member);
+		
+		return member;
+	}
+	
+	//네이버 소셜 로그인 연동
+	public MemberVO registerNaverlink(MemberVO member, NaverProfile naverProfile) {
+		
+		member.setProfileImage(naverProfile.getResponse().getProfile_image());
+		member.setSocial_type("NAVER");
+		member.setSns_id(naverProfile.getResponse().getId());;
+		
+		memberDAO.snslink(member);
+		
+		return member;
+	}
+	
+	//구글 소셜 로그인 연동
+	public MemberVO registerGooglelink(MemberVO member, GoogleProfile googleProfile) {
+		
+		member.setProfileImage(googleProfile.getPicture());
+		member.setSocial_type("Google");
+		member.setSns_id(googleProfile.getId());;
+		
+		memberDAO.snslink(member);
+		
+		return member;
 	}
 }

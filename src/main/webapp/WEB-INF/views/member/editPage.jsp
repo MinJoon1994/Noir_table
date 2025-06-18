@@ -202,7 +202,7 @@
     <div class="input-label">소셜 연동</div>
     <c:choose>
       <c:when test="${empty member.social_type}">
-        <button type="button" class="input-field" id="social_btn">소셜 연동하기</button>
+        <button type="button" class="input-field" id="social_btn" onclick="location.href='${contextPath}/member/snslink.do'">소셜 연동하기</button>
       </c:when>
       <c:otherwise>
         <div class="input-field" style="background-color:#f2f2f2; cursor: default;">

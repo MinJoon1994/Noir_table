@@ -154,4 +154,13 @@
 		    PROFILEIMAGE = #{profileImage,jdbcType=VARCHAR}
 		  WHERE MEMBER_ID = #{id}
 	</update>
+	
+	<update id="snslink" parameterType="map">
+		  UPDATE NOIR_MEMBER
+		  SET 
+		    social_type = #{social_type},
+		    sns_id = #{sns_id},
+		    PROFILEIMAGE = #{profileImage,jdbcType=VARCHAR}
+		  WHERE MEMBER_ID = #{id}
+	</update>
 </mapper>

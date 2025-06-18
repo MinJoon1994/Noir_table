@@ -218,7 +218,12 @@ body {
   <h1>Welcome to NOIR</h1>
   <p>도심 속 고요함과 미각의 향연, 파인 다이닝 레스토랑 NOIR에 오신 것을 환영합니다.</p>
   <form action="${contextPath}/reservation" method="get">
-    <button type="submit" class="reserve-btn">예약하러 가기</button>
+  	<c:if test="${not empty sessionScope.member}">
+    	<button type="button" class="reserve-btn" onclick="location.href='${contextPath}/reservationUser.do'">예약하러 가기</button>
+    </c:if>
+  	<c:if test="${empty sessionScope.member}">
+    	<button type="button" class="reserve-btn" onclick="location.href='${contextPath}/member/loginForm.do'">예약하러 가기</button>
+    </c:if>
   </form>
 </div>
 

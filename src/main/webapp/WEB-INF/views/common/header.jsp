@@ -78,7 +78,6 @@
 }
 
 .profile-wrapper img {
-	padding-top:5px;
     width: 100%;
     height: 100%;
     object-fit: cover;
@@ -107,7 +106,7 @@
     <nav class="slim-nav">
       <a href="<c:url value='/about.do'/>">ABOUT</a>
       <a href="<c:url value='/menu/list.do?menuType='/>">MENU</a>
-      <a href="<c:url value='/reservation/form.do'/>">RESERVATION</a>
+      <a href="<c:url value='/reservationUser.do'/>">RESERVATION</a>
       <a href="<c:url value='/gallery.do'/>">GALLERY</a>
       <c:if test="${not empty sessionScope.member}">
 		<a href="<c:url value='/mypage.do'/>">MYPAGE</a>
@@ -122,6 +121,9 @@
 		        <c:choose>
 		          <c:when test="${fn:startsWith(sessionScope.member.profileImage, 'http')}">
 		            <img src="${sessionScope.member.profileImage}" alt="프로필 이미지">
+		          </c:when>
+		          <c:when test="${empty sessionScope.member.profileImage}">
+		          	<img src="${contextPath}/resources/image/noir_icon.png" alt="프로필 이미지">
 		          </c:when>
 		          <c:otherwise>
 		            <img src="${contextPath}/upload/profile/${sessionScope.member.profileImage}" alt="프로필 이미지">

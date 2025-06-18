@@ -12,7 +12,7 @@
 	  </definition>
       
        -->
-	
+		
 	  <definition name="/member/loginForm" extends="baseLayout">
          <put-attribute name="title" value="𝐍𝐎𝐈𝐑 | Login" />
          <put-attribute name="header" value="/WEB-INF/views/common/header.jsp" />
@@ -35,6 +35,12 @@
          <put-attribute name="title" value="𝐍𝐎𝐈𝐑 | MyPage" />
          <put-attribute name="header" value="/WEB-INF/views/common/header.jsp" />
          <put-attribute name="body" value="/WEB-INF/views/member/editPage.jsp" />
+      </definition>
+      
+      <definition name="/member/snslink" extends="baseLayout">
+         <put-attribute name="title" value="𝐍𝐎𝐈𝐑 | SNS" />
+         <put-attribute name="header" value="/WEB-INF/views/common/header.jsp" />
+         <put-attribute name="body" value="/WEB-INF/views/member/snslink.jsp" />
       </definition>
       
       

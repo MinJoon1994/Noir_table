@@ -10,10 +10,7 @@
 		<put-attribute name="body" value="/WEB-INF/views/mypage/getReserve.jsp" />
 	</definition>
 	
-	
-	
-	
-	
+		
 	<!--  고객   -->
 
 	<definition name="/mypage/getReserveCustomer" extends="baseLayout">
@@ -21,12 +18,5 @@
 		<put-attribute name="header" value="/WEB-INF/views/common/main_header.jsp" />
 		<put-attribute name="body" value="/WEB-INF/views/mypage/getReserveCustomer.jsp" />
 	</definition>
-	
-	<definition name="/mypage/editPage" extends="baseLayout">
-		<put-attribute name="title" value="𝐍𝐎𝐈𝐑 | 내 예약 보기" />
-		<put-attribute name="header" value="/WEB-INF/views/common/main_header.jsp" />
-		<put-attribute name="body" value="/WEB-INF/views/mypage/editPage.jsp" />
-	</definition>
-	
 	
 </tiles-definitions>

@@ -1,6 +1,7 @@
 package com.noir.member.controller;
 
 import java.io.File;
+import java.net.URLEncoder;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.UUID;
@@ -88,7 +89,9 @@ public class MemberController {
 	public ModelAndView saveGooglePhone(@RequestParam("phone")String phone,
 			HttpServletRequest req,HttpServletResponse resp)throws Exception {
 				
-		memberService.saveGooglePhone(req,phone);
+		MemberVO member = memberService.saveGooglePhone(req,phone);
+		
+		req.setAttribute("member", member);
 				
 		return new ModelAndView("forward:/WEB-INF/views/member/saveSuccess.jsp");
 	}
@@ -196,6 +199,10 @@ public class MemberController {
 	public ModelAndView kakaoCallback(String code,
 			HttpServletRequest req,
 			HttpServletResponse resp) throws Exception{
+		
+		String errorMsg = "이미 다른 계정에 연동된 소셜로그인 계정입니다.";
+		String encodedMsg = URLEncoder.encode(errorMsg, "UTF-8");
+		
 		ModelAndView mav = new ModelAndView();
 		
 		RestTemplate rt = new RestTemplate();
@@ -240,20 +247,34 @@ public class MemberController {
 		
 		KakaoProfile kakaoProfile = objMapper2.readValue(respEntity2.getBody(),KakaoProfile.class);
 		
-		//카카오 프로필 카카오 고유 ID로 가입되어 있는지 조회
-		MemberVO member = memberService.findByKakaoId(req,kakaoProfile);
-		
-		//조회되지 않는다면 새로 회원가입
-		if(member == null) {
-			//카카오 서비스에서 받아온 회원정보로 회원가입처리
-			member = memberService.registerKakaoLogin(req,kakaoProfile);
-		}
-		
 		HttpSession session = req.getSession();
-		session.setAttribute("member", member);
-		
-		System.out.println(member.getId());
-		
+			
+	    MemberVO sessionMember = (MemberVO) session.getAttribute("member");
+
+	    if (sessionMember == null) {
+	        // (1) 비로그인 상태 → 카카오 계정으로 로그인 시도
+	        MemberVO member = memberService.findByKakaoId(req, kakaoProfile);
+	        if (member == null) {
+	            member = memberService.registerKakaoLogin(req, kakaoProfile); // 신규 가입
+	        }
+	        session.setAttribute("member", member);
+	    } else {
+	        // (2) 로그인 상태인데 카카오 연동이 안 돼 있음
+	        if (sessionMember.getSns_id() == null) {
+	        	
+	        	MemberVO existing = memberService.findByKakaoId(req, kakaoProfile);
+	        	
+	            if (existing != null) {
+	                // 이미 다른 계정과 연동된 상태이므로 연동 불가
+	            	mav.setViewName("redirect:/member/snslink.do?errorMsg="+encodedMsg);
+	                return mav;
+	            }
+	        	
+	            sessionMember = memberService.registerKakaolink(sessionMember, kakaoProfile); // 연동 처리
+	            session.setAttribute("member", sessionMember);
+	        }
+	    }
+				
 		mav.setViewName("redirect:/main.do");
 		
 		return mav;
@@ -305,14 +326,37 @@ public class MemberController {
 		
 		NaverProfile naverProfile = objectMapper.readValue(profileResponse.getBody(), NaverProfile.class);
 		
-		MemberVO member = memberService.findByNaverId(req,naverProfile);
-		
-		if(member == null) {
-			member = memberService.registerNaverLogin(req,naverProfile);
-		}
-		
 		HttpSession session = req.getSession();
-		session.setAttribute("member", member);
+		
+	    MemberVO sessionMember = (MemberVO) session.getAttribute("member");
+
+	    if (sessionMember == null) {
+	        // (1) 비로그인 상태 → 카카오 계정으로 로그인 시도
+	        MemberVO member = memberService.findByNaverId(req, naverProfile);
+	        if (member == null) {
+	            member = memberService.registerNaverLogin(req, naverProfile); // 신규 가입
+	        }
+	        session.setAttribute("member", member);
+	    } else {
+	        // (2) 로그인 상태인데 카카오 연동이 안 돼 있음
+	        if (sessionMember.getSns_id() == null) {
+	        	
+	        	MemberVO existing = memberService.findByNaverId(req, naverProfile);
+	        	
+	            if (existing != null) {
+	                // 이미 다른 계정과 연동된 상태이므로 연동 불가
+
+					String errorMsg = "이미 다른 계정에 연동된 소셜로그인 계정입니다.";
+					String encodedMsg = URLEncoder.encode(errorMsg, "UTF-8");
+					
+					mav.setViewName("redirect:/member/snslink.do?errorMsg=" + encodedMsg);
+	                return mav;
+	            }
+	        	
+	            sessionMember = memberService.registerNaverlink(sessionMember, naverProfile); // 연동 처리
+	            session.setAttribute("member", sessionMember);
+	        }
+	    }
 		
 		mav.setViewName("redirect:/main.do");
 		
@@ -366,18 +410,46 @@ public class MemberController {
 	    
 	    GoogleProfile googleProfile = mapper.readValue(profileResponse.getBody(), GoogleProfile.class);
 		
-		MemberVO member = memberService.findByGoogleId(req,googleProfile);
-		
-		if(member == null) {
-			member = memberService.registerGoogleLogin(req,googleProfile);
-		}
-		
 		HttpSession session = req.getSession();
-		session.setAttribute("member", member);
 		
-		if(member.getPhone()==null)	mav.setViewName("redirect:/member/googleForm.do");
+	    MemberVO sessionMember = (MemberVO) session.getAttribute("member");
+
+	    if (sessionMember == null) {
+	        // (1) 비로그인 상태 → 카카오 계정으로 로그인 시도
+	        MemberVO member = memberService.findByGoogleId(req, googleProfile);
+	        if (member == null) {
+	            member = memberService.registerGoogleLogin(req, googleProfile); // 신규 가입
+	        }
+	        session.setAttribute("member", member);
+	        if(member.getPhone() == null) {
+	        	mav.setViewName("redirect:/member/googleForm.do");
+	        }
+	        	mav.setViewName("redirect:/main.do");
+	        
+	        return mav;
+	    } else {
+	        // (2) 로그인 상태인데 카카오 연동이 안 돼 있음
+	        if (sessionMember.getSns_id() == null) {
+	        	
+	        	MemberVO existing = memberService.findByGoogleId(req, googleProfile);
+	        	
+	            if (existing != null) {
+	                // 이미 다른 계정과 연동된 상태이므로 연동 불가
+
+					String errorMsg = "이미 다른 계정에 연동된 소셜로그인 계정입니다.";
+					String encodedMsg = URLEncoder.encode(errorMsg, "UTF-8");
+					
+					mav.setViewName("redirect:/member/snslink.do?errorMsg=" + encodedMsg);
+					
+	                return mav;
+	            }
+	        	
+	            sessionMember = memberService.registerGooglelink(sessionMember, googleProfile); // 연동 처리
+	            session.setAttribute("member", sessionMember);
+	        }
+	    }
 		
-		if(member.getPhone()!=null) mav.setViewName("redirect:/main.do");
+		mav.setViewName("redirect:/main.do");
 		
 		return mav;
 	}
@@ -451,6 +523,21 @@ public class MemberController {
 	    mav.setViewName("redirect:/member/editPage.do"); // 예: 마이페이지로 이동
 	    
 	    return mav;
+	}
+	
+	//소셜네트워크 서비스 연동하기 페이지
+	@RequestMapping("/snslink.do")
+	public ModelAndView snslinkPage(HttpServletRequest req,HttpServletResponse resp) {
+		
+		ModelAndView mav = new ModelAndView();
+		
+		HttpSession session = req.getSession();
+
+	
+		String viewName = (String)req.getAttribute("viewName");
+		mav.setViewName(viewName);
+		
+		return mav;
 	}
 	
 }

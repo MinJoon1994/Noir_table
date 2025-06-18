@@ -69,5 +69,11 @@ public class MemberDAO {
 		sqlSession.update("mapper.member.updateMember",member);
 		
 	}
+	
+	//9.소셜 로그인 연동
+	public void snslink(MemberVO member) {
+		sqlSession.update("mapper.member.snslink",member);
+	}
+	
 
 }

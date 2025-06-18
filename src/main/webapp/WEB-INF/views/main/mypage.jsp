@@ -128,7 +128,7 @@
 
     <!-- 소셜 미연동 회원 -->
     <c:if test="${sessionScope.member.social_type eq null}">
-      <button class="noir-btn">소셜 연동하기</button>
+      <button class="noir-btn" onclick="location.href='${contextPath}/member/snslink.do'">소셜 연동하기</button>
     </c:if>
   </c:if>
 </div>

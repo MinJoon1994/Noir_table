@@ -166,7 +166,6 @@
 	}
 	
 	.profile-wrapper img {
-		padding-top:5px;
 	    width: 100%;
 	    height: 100%;
 	    object-fit: cover;
@@ -205,6 +204,9 @@
 			        <c:choose>
 			          <c:when test="${fn:startsWith(sessionScope.member.profileImage, 'http')}">
 			            <img src="${sessionScope.member.profileImage}" alt="프로필 이미지">
+			          </c:when>
+			          <c:when test="${empty sessionScope.member.profileImage}">
+			          	<img src="${contextPath}/resources/image/noir_icon.png" alt="프로필 이미지">
 			          </c:when>
 			          <c:otherwise>
 			            <img src="${contextPath}/upload/profile/${sessionScope.member.profileImage}" alt="프로필 이미지">
