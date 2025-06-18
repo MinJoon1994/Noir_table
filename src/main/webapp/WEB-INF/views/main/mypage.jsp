@@ -40,6 +40,17 @@
   	font-style: italic;
 }
 
+.mypage-grade{
+	margin-right:auto;
+	margin-left:auto;
+	font-size: 30px;
+	text-align: center;       /* 가운데 정렬 */
+    font-size: 28px;          /* 글자 크기 */
+    color: #111;              /* 글자 색상 */
+    letter-spacing: 2px;      /* 자간 */
+    margin-bottom:30px;
+}
+
 
 .noir-btn:hover {
   background-color: #452160;
@@ -112,12 +123,18 @@
 	My page
 </div>
 
+<c:if test="${sessionScope.member.role eq 'USER'}">
+<div class="mypage-grade fade-up">
+	고객님의 현재 등급은 <span style="font-family: 'Georgia', 'Times New Roman', serif;
+  	font-style: italic;">${sessionScope.memberProfile.grade}</span> 입니다.
+</div>
+</c:if>
 <div class="mypage-btn-wrap fade-up">
   <!-- ADMIN 전용 -->
   <c:if test="${sessionScope.member.role eq 'ADMIN'}">
     <button class="noir-btn" onclick="location.href='${contextPath}/mypage/getReserve.do'">예약 현황</button>
     <button class="noir-btn" onclick="location.href='${contextPath}/이동할/경로'">리뷰 관리</button>
-    <button class="noir-btn" onclick="location.href='${contextPath}/이동할/경로'">고객 관리</button>
+    <button class="noir-btn" onclick="location.href='${contextPath}/member/memberlist.do'">고객 관리</button>
   </c:if>
 
   <!-- USER 공통 -->

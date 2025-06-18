@@ -1,11 +1,14 @@
 package com.noir.member.service;
 
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import com.noir.member.dao.MemberDAO;
 import com.noir.member.vo.GoogleProfile;
 import com.noir.member.vo.KakaoProfile;
+import com.noir.member.vo.MemberProfileVO;
 import com.noir.member.vo.MemberRole;
 import com.noir.member.vo.MemberVO;
 import com.noir.member.vo.NaverProfile;
@@ -36,7 +39,13 @@ public class MemberService {
 		memberVO.setPhone(phone);
 		memberVO.setRole(MemberRole.USER);
 		
+		//회원등록
 		memberDAO.register(memberVO);
+		
+		//회원 상세 프로필
+		MemberVO member = memberDAO.findByLoginId(loginId);
+		
+		memberDAO.registerProfile(member);
 		
 	}
 	
@@ -90,6 +99,10 @@ public class MemberService {
 		
 		memberDAO.registerKakao(member);
 		
+		member = memberDAO.findByLoginId(kakaoProfile.getKakao_account().getEmail());
+				
+		memberDAO.registerProfile(member);
+		
 		return member;
 	}
 
@@ -119,6 +132,10 @@ public class MemberService {
 		//카카오 로그인이랑 로직이 동일하므로 카카오 로그인 메소드 사용
 		memberDAO.registerKakao(member); 
 		
+		member = memberDAO.findByLoginId(naverProfile.getResponse().getEmail());
+		
+		memberDAO.registerProfile(member);
+		
 		return member;
 	}
 
@@ -142,6 +159,10 @@ public class MemberService {
 		member.setRole(MemberRole.USER);
 		
 		memberDAO.registerGoogle(member);
+		
+		member = memberDAO.findByLoginId(googleProfile.getEmail());
+		
+		memberDAO.registerProfile(member);
 		
 		return member; 
 	}
@@ -202,5 +223,15 @@ public class MemberService {
 		memberDAO.snslink(member);
 		
 		return member;
+	}
+
+	public List<MemberVO> getMemberList() {
+		
+		return memberDAO.getMemberList();
+	}
+
+	public MemberProfileVO findProfileById(int id) {
+		
+		return memberDAO.findProfileById(id);
 	}
 }

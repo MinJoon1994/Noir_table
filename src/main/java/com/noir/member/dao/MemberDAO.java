@@ -1,12 +1,14 @@
 package com.noir.member.dao;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.ibatis.session.SqlSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import com.noir.member.vo.MemberProfileVO;
 import com.noir.member.vo.MemberVO;
 
 @Repository
@@ -73,6 +75,33 @@ public class MemberDAO {
 	//9.소셜 로그인 연동
 	public void snslink(MemberVO member) {
 		sqlSession.update("mapper.member.snslink",member);
+	}
+
+	//10. 관리자 전체 고객 조회
+	public List<MemberVO> getMemberList() {
+		
+		return sqlSession.selectList("mapper.member.memberList");
+	}
+	
+	//11. 로그인 아이디로 멤버 조회
+	public MemberVO findByLoginId(String loginId) {
+		
+		return sqlSession.selectOne("mapper.member.findByLoginId",loginId);
+	}
+	
+	//12. 멤버 상세 정보 생성
+	public void registerProfile(MemberVO member) {
+		
+		int memberId = member.getId();
+		
+		sqlSession.insert("mapper.member.insertProfile",memberId);
+		
+	}
+	
+	//13. 멤버 아이디로 상세 프로필 가져오기
+	public MemberProfileVO findProfileById(int id) {
+		
+		return sqlSession.selectOne("mapper.member.findProfileById",id);
 	}
 	
 

@@ -44,6 +44,8 @@
 	<typeAlias type="com.noir.review.vo.ReviewVO"  alias="ReviewVO"/>
 	<typeAlias type="com.noir.review.vo.RePhotoVO"  alias="RePhotoVO"/>
 	
+	
+	<typeAlias type="com.noir.member.vo.MemberProfileVO" alias="memberProfileVO"/>
   </typeAliases>
 
   <!--

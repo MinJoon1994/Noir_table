@@ -106,7 +106,9 @@
     <nav class="slim-nav">
       <a href="<c:url value='/about.do'/>">ABOUT</a>
       <a href="<c:url value='/menu/list.do?menuType='/>">MENU</a>
-      <a href="<c:url value='/reservationUser.do'/>">RESERVATION</a>
+      <c:if test="${not empty sessionScope.member}">
+      	<a href="<c:url value='/reservationUser.do'/>">RESERVATION</a>
+      </c:if>
       <a href="<c:url value='/gallery.do'/>">GALLERY</a>
       <c:if test="${not empty sessionScope.member}">
 		<a href="<c:url value='/mypage.do'/>">MYPAGE</a>

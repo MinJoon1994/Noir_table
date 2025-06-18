@@ -4,6 +4,7 @@ import java.io.File;
 import java.net.URLEncoder;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.List;
 import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
@@ -34,6 +35,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.noir.member.service.MemberService;
 import com.noir.member.vo.GoogleProfile;
 import com.noir.member.vo.KakaoProfile;
+import com.noir.member.vo.MemberProfileVO;
+import com.noir.member.vo.MemberRole;
 import com.noir.member.vo.MemberVO;
 import com.noir.member.vo.NaverProfile;
 import com.noir.member.vo.OAuthToken;
@@ -150,7 +153,7 @@ public class MemberController {
 	public ModelAndView login(HttpServletRequest req, HttpServletResponse resp) {
 		
 		ModelAndView mav = new ModelAndView();
-		
+		HttpSession session = req.getSession();
 		//로그인 사용자 정보 받아오기
 		MemberVO member = memberService.login(req);
 		
@@ -158,10 +161,14 @@ public class MemberController {
 			mav.setViewName("/member/loginForm");
 			return mav;
 		}
-		
-		HttpSession session = req.getSession();
+
+		if(member.getRole() == MemberRole.USER) {
+			MemberProfileVO memberProfile = memberService.findProfileById(member.getId());
+			session.setAttribute("memberProfile", memberProfile);
+		}
+
 		session.setAttribute("member", member);
-		
+
 
 		System.out.println(member.getId());
 
@@ -257,7 +264,11 @@ public class MemberController {
 	        if (member == null) {
 	            member = memberService.registerKakaoLogin(req, kakaoProfile); // 신규 가입
 	        }
+	        
+			MemberProfileVO memberProfile = memberService.findProfileById(member.getId());
+			session.setAttribute("memberProfile", memberProfile);
 	        session.setAttribute("member", member);
+	        
 	    } else {
 	        // (2) 로그인 상태인데 카카오 연동이 안 돼 있음
 	        if (sessionMember.getSns_id() == null) {
@@ -272,9 +283,12 @@ public class MemberController {
 	        	
 	            sessionMember = memberService.registerKakaolink(sessionMember, kakaoProfile); // 연동 처리
 	            session.setAttribute("member", sessionMember);
+	    		MemberProfileVO memberProfile = memberService.findProfileById(sessionMember.getId());
+	    		session.setAttribute("memberProfile", memberProfile);
+	            
 	        }
 	    }
-				
+	    				
 		mav.setViewName("redirect:/main.do");
 		
 		return mav;
@@ -331,14 +345,16 @@ public class MemberController {
 	    MemberVO sessionMember = (MemberVO) session.getAttribute("member");
 
 	    if (sessionMember == null) {
-	        // (1) 비로그인 상태 → 카카오 계정으로 로그인 시도
+	        // (1) 비로그인 상태 → 네이버 계정으로 로그인 시도
 	        MemberVO member = memberService.findByNaverId(req, naverProfile);
 	        if (member == null) {
 	            member = memberService.registerNaverLogin(req, naverProfile); // 신규 가입
 	        }
+			MemberProfileVO memberProfile = memberService.findProfileById(member.getId());
+			session.setAttribute("memberProfile", memberProfile);
 	        session.setAttribute("member", member);
 	    } else {
-	        // (2) 로그인 상태인데 카카오 연동이 안 돼 있음
+	        // (2) 로그인 상태인데 네이버 연동이 안 돼 있음
 	        if (sessionMember.getSns_id() == null) {
 	        	
 	        	MemberVO existing = memberService.findByNaverId(req, naverProfile);
@@ -355,9 +371,11 @@ public class MemberController {
 	        	
 	            sessionMember = memberService.registerNaverlink(sessionMember, naverProfile); // 연동 처리
 	            session.setAttribute("member", sessionMember);
+	    		MemberProfileVO memberProfile = memberService.findProfileById(sessionMember.getId());
+	    		session.setAttribute("memberProfile", memberProfile);
 	        }
 	    }
-		
+
 		mav.setViewName("redirect:/main.do");
 		
 		return mav;
@@ -415,20 +433,25 @@ public class MemberController {
 	    MemberVO sessionMember = (MemberVO) session.getAttribute("member");
 
 	    if (sessionMember == null) {
-	        // (1) 비로그인 상태 → 카카오 계정으로 로그인 시도
+	        // (1) 비로그인 상태 → 구글 계정으로 로그인 시도
 	        MemberVO member = memberService.findByGoogleId(req, googleProfile);
 	        if (member == null) {
 	            member = memberService.registerGoogleLogin(req, googleProfile); // 신규 가입
 	        }
+	        
+			MemberProfileVO memberProfile = memberService.findProfileById(member.getId());
+			session.setAttribute("memberProfile", memberProfile);
 	        session.setAttribute("member", member);
+	        
 	        if(member.getPhone() == null) {
 	        	mav.setViewName("redirect:/member/googleForm.do");
+	        	return mav;
 	        }
 	        	mav.setViewName("redirect:/main.do");
 	        
 	        return mav;
 	    } else {
-	        // (2) 로그인 상태인데 카카오 연동이 안 돼 있음
+	        // (2) 로그인 상태인데 구글 연동이 안 돼 있음
 	        if (sessionMember.getSns_id() == null) {
 	        	
 	        	MemberVO existing = memberService.findByGoogleId(req, googleProfile);
@@ -446,6 +469,8 @@ public class MemberController {
 	        	
 	            sessionMember = memberService.registerGooglelink(sessionMember, googleProfile); // 연동 처리
 	            session.setAttribute("member", sessionMember);
+	    		MemberProfileVO memberProfile = memberService.findProfileById(sessionMember.getId());
+	    		session.setAttribute("memberProfile", memberProfile);
 	        }
 	    }
 		
@@ -535,6 +560,24 @@ public class MemberController {
 
 	
 		String viewName = (String)req.getAttribute("viewName");
+		mav.setViewName(viewName);
+		
+		return mav;
+	}
+	
+	//관리자 - 고객 관리 페이지
+	@RequestMapping("/memberlist.do")
+	public ModelAndView memeberlist(HttpServletRequest req, HttpServletResponse resp) {
+		
+		ModelAndView mav = new ModelAndView();
+		
+		HttpSession session = req.getSession();
+		
+		List<MemberVO> memberList = memberService.getMemberList();
+		
+		req.setAttribute("memberList", memberList);
+		
+		String viewName = (String) req.getAttribute("viewName");
 		mav.setViewName(viewName);
 		
 		return mav;

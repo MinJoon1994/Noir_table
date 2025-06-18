@@ -35,6 +35,15 @@
 		<result property="profileImage" column="profileimage" />
 	</resultMap>
 	
+	<resultMap id="profileResult" type="memberProfileVO">
+		<id property="profile_id" column="profile_id"/>
+		<result property="member_id" column="member_id" />
+		<result property="grade" column="grade" />
+		<result property="total_spent" column="total_spent" />
+		<result property="visit_count" column="visit_count" />
+		<result property="last_visit" column="last_visit" />
+	</resultMap>
+	
 	<!-- =========================================================
 	     ✅ 2. SQL 매핑 영역
 	     - 실제 SQL 쿼리와 해당 id 값을 지정해서 Mapper 인터페이스와 연결
@@ -163,4 +172,30 @@
 		    PROFILEIMAGE = #{profileImage,jdbcType=VARCHAR}
 		  WHERE MEMBER_ID = #{id}
 	</update>
+	
+	<select id="memberList" resultMap="memberResult">
+		select * from noir_member
+	</select>
+	
+	<select id="findByLoginId" parameterType="String" resultMap="memberResult">
+		select * from noir_member where login_id = #{loginId}
+	</select>
+	
+	<insert id="insertProfile" parameterType="int">
+		insert into noir_customer_profile(
+			profile_id,
+			member_id,
+			last_visit
+		)
+		values(
+			seq_noir_customer_profile_id.NEXTVAL,
+			#{memberId},
+			SYSDATE
+		)
+		
+	</insert>
+	
+	<select id="findProfileById" parameterType="int" resultMap="profileResult">
+		select * from noir_customer_profile where member_id = #{id}
+	</select>
 </mapper>

@@ -43,6 +43,11 @@
          <put-attribute name="body" value="/WEB-INF/views/member/snslink.jsp" />
       </definition>
       
+      <definition name="/member/memberlist" extends="baseLayout">
+      	 <put-attribute name="title" value="𝐍𝐎𝐈𝐑 | member" />
+         <put-attribute name="header" value="/WEB-INF/views/common/header.jsp" />
+         <put-attribute name="body" value="/WEB-INF/views/member/memberList.jsp" />
+      </definition>
       
 </tiles-definitions>
 
