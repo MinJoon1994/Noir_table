@@ -26,7 +26,7 @@
 		</resultMap>
 	 ==========================================================
 	 -->
-	<resultMap id="reviewMap" type="com.noir.review.vo.ReviewVO">
+	<resultMap id="reviewMap" type="ReviewVO">
 		<id property="reviewId" column="review_id"/>
 		<result property="title" column="title"/>
 		<result property="content" column="content"/>
@@ -63,6 +63,7 @@
 	                   res.reservation_date, res.meal_type
 	            FROM noir_review r
 	            LEFT JOIN noir_reservation res ON r.reservation_id = res.reservation_id
+	            
 	            ORDER BY r.review_id DESC
 	        ) inner_query
 	        WHERE ROWNUM &lt;= #{offset} + #{limit}
@@ -79,10 +80,11 @@
 	<select id="selectReviewById" resultMap="reviewMap">
 		SELECT r.*, res.reservation_date, res.meal_type
 		FROM noir_review r
+<!-- 		LEFT JOIN noir_photo p ON p.photo_id = r.review_id -->
 		LEFT JOIN noir_reservation res ON r.reservation_id = res.reservation_id
 		WHERE r.review_id = #{reviewId}
 	</select>
-	<!-- 상세페이지 다음글 -->
+	<!-- 상세페이지 이전글 -->
 	<select id="selectPrevReview" parameterType="long" resultMap="reviewMap">
         SELECT *
         FROM (
@@ -110,7 +112,7 @@
 
 	<!-- 리뷰 등록 (리뷰ID 반환) -->
 	<insert id="insertReview" parameterType="com.noir.review.vo.ReviewVO" useGeneratedKeys="true" keyProperty="reviewId">
-		INSERT INTO noir_review (review_id, title, content, rating, reservation_id)
+		INSERT INTO noir_review (review_id, title, content, rating, photo_url)
 		VALUES (noir_review_seq.NEXTVAL, #{title}, #{content}, #{rating}, #{reservationId})
 		<selectKey resultType="long" order="AFTER" keyProperty="reviewId">
 			SELECT noir_review_seq.CURRVAL FROM DUAL
