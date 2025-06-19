@@ -78,9 +78,15 @@ public class MemberDAO {
 	}
 
 	//10. 관리자 전체 고객 조회
-	public List<MemberVO> getMemberList() {
+	public List<MemberVO> getMemberList(int pageSize, int startRow) {
 		
-		return sqlSession.selectList("mapper.member.memberList");
+		int endRow = startRow + pageSize;
+		
+	    Map<String, Object> paramMap = new HashMap<>();
+	    paramMap.put("endRow", endRow);
+	    paramMap.put("startRow", startRow);
+		
+		return sqlSession.selectList("mapper.member.memberList",paramMap);
 	}
 	
 	//11. 로그인 아이디로 멤버 조회
@@ -102,6 +108,41 @@ public class MemberDAO {
 	public MemberProfileVO findProfileById(int id) {
 		
 		return sqlSession.selectOne("mapper.member.findProfileById",id);
+	}
+	
+	//14. 멤버 상세 프로필 리스트 가져오기
+	public List<MemberProfileVO> getMemberProfileList() {
+		
+		return sqlSession.selectList("mapper.member.getMemberProfileList");
+	}
+	
+	//15. 고객 등급업
+	public void upGradeCustomer(MemberProfileVO profile) {
+		
+		sqlSession.update("mapper.member.upGradeCustomer",profile);
+		
+	}
+	//16. VIP 고객
+	public List<MemberVO> getVIPMemberList() {
+	
+		return sqlSession.selectList("mapper.member.getVIPMemberList");
+	}
+	
+	//17. 총 회원수
+	public int countAllExceptAdmin() {
+		
+		return sqlSession.selectOne("mapper.member.countAllExceptAdmin");
+	}
+	
+	//18. 회원 아이디로 검색
+	public List<MemberVO> searchMemberListPaged(Map<String, Object> paramMap) {
+		
+		return sqlSession.selectList("mapper.member.searchMemberListPaged",paramMap);
+	}
+
+	public int countSearchMember(String trim) {
+		
+		return sqlSession.selectOne("mapper.member.countSearchMember",trim);
 	}
 	
 

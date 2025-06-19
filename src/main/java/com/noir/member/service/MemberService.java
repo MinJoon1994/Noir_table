@@ -1,6 +1,7 @@
 package com.noir.member.service;
 
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -225,13 +226,67 @@ public class MemberService {
 		return member;
 	}
 
-	public List<MemberVO> getMemberList() {
+	public List<MemberVO> getMemberList(int pageSize, int startRow) {
 		
-		return memberDAO.getMemberList();
+		return memberDAO.getMemberList(pageSize,startRow);
 	}
 
 	public MemberProfileVO findProfileById(int id) {
 		
 		return memberDAO.findProfileById(id);
+	}
+
+	public List<MemberProfileVO> getMemberProfileList() {
+		
+		return memberDAO.getMemberProfileList();
+	}
+
+	public List<MemberProfileVO> updateCustomerInfo() {
+		
+		List<MemberProfileVO> profileList = memberDAO.getMemberProfileList();
+		
+		//등급업 조건 충족 되면 등급업
+		for(MemberProfileVO profile : profileList) {
+			int profile_id = profile.getProfile_id();
+			int visitCount = profile.getVisit_count();
+			int totalSpent = profile.getTotal_spent();
+			String grade = profile.getGrade();
+			
+			// 방문회수 50 회 이상 이거나 총 소비 금액 천만원 이상인 경우 VIP
+			if(visitCount >= 50 || totalSpent >= 10000000) {
+				profile.setGrade("VIP");
+				memberDAO.upGradeCustomer(profile);
+			} 
+			// 한번이라도 방문 했다면 REGULAR로 등급업
+			else if( visitCount < 50 && visitCount >= 1) {
+				profile.setGrade("REGULAR");
+				memberDAO.upGradeCustomer(profile);
+			}		
+		}
+		
+		profileList = memberDAO.getMemberProfileList();
+		
+		return profileList;
+	}
+
+	public List<MemberVO> getVIPMemberList() {
+		
+		return memberDAO.getVIPMemberList();
+	}
+
+	public int countAllExceptAdmin() {
+		
+		return memberDAO.countAllExceptAdmin();
+	}
+
+
+	public List<MemberVO> searchMemberListPaged(Map<String, Object> paramMap) {
+		
+		return memberDAO.searchMemberListPaged(paramMap);
+	}
+
+	public int countSearchMember(String trim) {
+		
+		return memberDAO.countSearchMember(trim);
 	}
 }

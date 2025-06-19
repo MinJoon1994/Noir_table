@@ -4,7 +4,9 @@ import java.io.File;
 import java.net.URLEncoder;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
@@ -567,20 +569,82 @@ public class MemberController {
 	
 	//관리자 - 고객 관리 페이지
 	@RequestMapping("/memberlist.do")
-	public ModelAndView memeberlist(HttpServletRequest req, HttpServletResponse resp) {
+	public ModelAndView memberlist(@RequestParam(value = "page", defaultValue = "1") int page,
+	                               @RequestParam(value = "searchId", required = false) String searchId,
+	                               HttpServletRequest req, HttpServletResponse resp) {
+
+	    ModelAndView mav = new ModelAndView();
+	    int pageSize = 10;
+	    int startRow = (page - 1) * pageSize;
+	    int endRow = page * pageSize;
+	    
+	    List<MemberVO> memberList;
+	    int totalCount;
+
+	    if (searchId != null && !searchId.trim().isEmpty()) {
+	        // 🔍 검색어가 있으면 페이징까지 적용해서 DAO에서 조회
+	        Map<String, Object> paramMap = new HashMap<>();
+	        paramMap.put("searchId", "%" + searchId.trim() + "%");
+	        paramMap.put("startRow", startRow);
+	        paramMap.put("endRow", endRow);
+
+	        memberList = memberService.searchMemberListPaged(paramMap);
+	        totalCount = memberService.countSearchMember(searchId.trim());
+	    } else {
+	        memberList = memberService.getMemberList(pageSize, startRow);
+	        totalCount = memberService.countAllExceptAdmin();
+	    }
+
+	    List<MemberProfileVO> memberProfileList = memberService.getMemberProfileList();
+
+	    int totalPages = (int) Math.ceil((double) totalCount / pageSize);
+
+	    req.setAttribute("memberList", memberList);
+	    req.setAttribute("memberProfileList", memberProfileList);
+	    req.setAttribute("currentPage", page);
+	    req.setAttribute("totalPages", totalPages);
+	    req.setAttribute("searchId", searchId);
+
+	    mav.setViewName("/member/memberlist");
+	    return mav;
+	}
+	
+	//전체 고객 등급/정보 갱신
+	@RequestMapping("/updateCustomerInfo.do")
+	public ModelAndView updateCustomerInfo(HttpServletRequest req,HttpServletResponse resp) {
 		
 		ModelAndView mav = new ModelAndView();
 		
 		HttpSession session = req.getSession();
 		
-		List<MemberVO> memberList = memberService.getMemberList();
+		List<MemberProfileVO> memberProfileList = memberService.updateCustomerInfo();
+				
+		mav.setViewName("redirect:/member/memberlist.do");
+		
+		return mav;
+		
+	}
+	
+	@RequestMapping("/vipList.do")
+	public ModelAndView getVipList(HttpServletRequest req,HttpServletResponse resp) {
+		
+		ModelAndView mav = new ModelAndView();
+		
+		HttpSession session = req.getSession();
+		
+		List<MemberVO> memberList = memberService.getVIPMemberList();
 		
 		req.setAttribute("memberList", memberList);
 		
-		String viewName = (String) req.getAttribute("viewName");
-		mav.setViewName(viewName);
+		List<MemberProfileVO> memberProfileList = memberService.getMemberProfileList();
+		
+		req.setAttribute("memberProfileList", memberProfileList);
+		
+		mav.setViewName("/member/memberlist");
 		
 		return mav;
+		
 	}
+	
 	
 }

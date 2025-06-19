@@ -173,8 +173,17 @@
 		  WHERE MEMBER_ID = #{id}
 	</update>
 	
-	<select id="memberList" resultMap="memberResult">
-		select * from noir_member
+	<select id="memberList" parameterType="map" resultMap="memberResult">
+		  SELECT * FROM (
+		    SELECT inner_table.*, ROWNUM rnum
+		    FROM (
+		      SELECT * FROM noir_member
+		      WHERE login_id != 'admin'
+		      ORDER BY member_id DESC
+		    ) inner_table
+		    WHERE ROWNUM &lt;= #{endRow}
+		  )
+		  WHERE rnum &gt; #{startRow}
 	</select>
 	
 	<select id="findByLoginId" parameterType="String" resultMap="memberResult">
@@ -197,5 +206,51 @@
 	
 	<select id="findProfileById" parameterType="int" resultMap="profileResult">
 		select * from noir_customer_profile where member_id = #{id}
+	</select>
+	
+	<select id="getMemberProfileList" resultMap="profileResult">
+		select * from noir_customer_profile
+	</select>
+	
+	<update id="upGradeCustomer" parameterType="map">
+		update noir_customer_profile
+		SET
+			grade=#{grade}
+		WHERE
+			profile_id=#{profile_id}
+	</update>
+	
+	<select id="getVIPMemberList" resultMap="memberResult">
+		SELECT m.*
+		FROM noir_member m
+		JOIN noir_customer_profile p ON m.member_id = p.member_id
+		WHERE p.grade = 'VIP'
+	</select>
+	
+	<select id="countAllExceptAdmin" resultType="int">
+	  SELECT COUNT(*) FROM noir_member WHERE login_id != 'admin'
+	</select>
+	
+	
+	<select id="searchMemberListPaged" parameterType="map" resultMap="memberResult">
+	  SELECT * FROM (
+	      SELECT ROWNUM AS rnum, inner_query.*
+	      FROM (
+	          SELECT *
+	          FROM noir_member
+	          WHERE login_id LIKE #{searchId}
+	            AND login_id != 'admin'
+	          ORDER BY member_id DESC
+	      ) inner_query
+	      WHERE ROWNUM &lt;= #{endRow}
+	  )
+	  WHERE rnum &gt; #{startRow}
+	</select>
+	
+	<select id="countSearchMember" parameterType="string" resultType="int">
+	  SELECT COUNT(*)
+	  FROM noir_member
+	  WHERE login_id LIKE '%' || #{trim} || '%'
+	    AND login_id != 'admin'
 	</select>
 </mapper>
