@@ -79,8 +79,8 @@ public class AdminReserveServiceImpl implements AdminReserveService {
 	
 	// 모든 예약한 테이블 조회
 	@Override
-	public List<Integer> getReservedSeats(Integer reserveId, Integer memberId) {
-		return adminReserveDAO.getReservedSeats(reserveId, memberId);
+	public List<Integer> getReservedSeats(Integer reserveId) {
+		return adminReserveDAO.getReservedSeats(reserveId);
 	}
 
 

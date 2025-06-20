@@ -30,7 +30,7 @@ public interface AdminReserveService {
 	List<RestaurantSeatVO> getAllSeats();
 	
 	// 모든 예약한 테이블 번호 조회
-	List<Integer> getReservedSeats(Integer reserveId, Integer memberId);
+	List<Integer> getReservedSeats(Integer reserveId);
 	
 	// 결제하고 결제정보 저장
 	void reserveAndPay(int seatId, int reserveId, int totalPrice, Integer memberId);

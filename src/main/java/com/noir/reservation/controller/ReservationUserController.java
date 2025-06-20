@@ -54,7 +54,7 @@ public class ReservationUserController {
 	        // 전체 좌석 목록
 	        mav.addObject("seatList", restaurantSeatVOs);
 	        
-	        List<Integer> reservedSeatsId = adminReserveService.getReservedSeats(reserveId, memberId); 
+	        List<Integer> reservedSeatsId = adminReserveService.getReservedSeats(reserveId); 
 	        mav.addObject("reservedSeatsId", reservedSeatsId);
 	        
 	        mav.addObject("floor", floor);
@@ -96,7 +96,7 @@ public class ReservationUserController {
 	        }
 	        mav.addObject("seatList", restaurantSeatVOs);
 
-	        List<Integer> reservedSeatsId = adminReserveService.getReservedSeats(reserveId, memberId); 
+	        List<Integer> reservedSeatsId = adminReserveService.getReservedSeats(reserveId); 
 	        mav.addObject("reservedSeatsId", reservedSeatsId);
 	        
 	        mav.addObject("floor", floor);
