@@ -1,12 +1,14 @@
 package com.noir.member.dao;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.ibatis.session.SqlSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import com.noir.member.vo.MemberProfileVO;
 import com.noir.member.vo.MemberVO;
 
 @Repository
@@ -51,7 +53,8 @@ public class MemberDAO {
 		sqlSession.insert("mapper.member.insertGoogleMember",memberVO);
 		
 	}
-
+	
+	//7.구글 로그인 회원 전화번호 등록
 	public void saveGooglePhone(String phone, String snsId) {
 		
 		Map<String,String> map = new HashMap<>();
@@ -61,5 +64,86 @@ public class MemberDAO {
 		sqlSession.update("mapper.member.saveGooglePhone",map);
 		
 	}
+	
+	//8.회원 개인정보 수정
+	public void updateMember(MemberVO member) {
+		
+		sqlSession.update("mapper.member.updateMember",member);
+		
+	}
+	
+	//9.소셜 로그인 연동
+	public void snslink(MemberVO member) {
+		sqlSession.update("mapper.member.snslink",member);
+	}
+
+	//10. 관리자 전체 고객 조회
+	public List<MemberVO> getMemberList(int pageSize, int startRow) {
+		
+		int endRow = startRow + pageSize;
+		
+	    Map<String, Object> paramMap = new HashMap<>();
+	    paramMap.put("endRow", endRow);
+	    paramMap.put("startRow", startRow);
+		
+		return sqlSession.selectList("mapper.member.memberList",paramMap);
+	}
+	
+	//11. 로그인 아이디로 멤버 조회
+	public MemberVO findByLoginId(String loginId) {
+		
+		return sqlSession.selectOne("mapper.member.findByLoginId",loginId);
+	}
+	
+	//12. 멤버 상세 정보 생성
+	public void registerProfile(MemberVO member) {
+		
+		int memberId = member.getId();
+		
+		sqlSession.insert("mapper.member.insertProfile",memberId);
+		
+	}
+	
+	//13. 멤버 아이디로 상세 프로필 가져오기
+	public MemberProfileVO findProfileById(int id) {
+		
+		return sqlSession.selectOne("mapper.member.findProfileById",id);
+	}
+	
+	//14. 멤버 상세 프로필 리스트 가져오기
+	public List<MemberProfileVO> getMemberProfileList() {
+		
+		return sqlSession.selectList("mapper.member.getMemberProfileList");
+	}
+	
+	//15. 고객 등급업
+	public void upGradeCustomer(MemberProfileVO profile) {
+		
+		sqlSession.update("mapper.member.upGradeCustomer",profile);
+		
+	}
+	//16. VIP 고객
+	public List<MemberVO> getVIPMemberList() {
+	
+		return sqlSession.selectList("mapper.member.getVIPMemberList");
+	}
+	
+	//17. 총 회원수
+	public int countAllExceptAdmin() {
+		
+		return sqlSession.selectOne("mapper.member.countAllExceptAdmin");
+	}
+	
+	//18. 회원 아이디로 검색
+	public List<MemberVO> searchMemberListPaged(Map<String, Object> paramMap) {
+		
+		return sqlSession.selectList("mapper.member.searchMemberListPaged",paramMap);
+	}
+
+	public int countSearchMember(String trim) {
+		
+		return sqlSession.selectOne("mapper.member.countSearchMember",trim);
+	}
+	
 
 }

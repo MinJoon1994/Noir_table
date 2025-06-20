@@ -29,7 +29,6 @@
 	<typeAlias type="com.noir.menu.vo.MenuVO" alias="MenuVO"/>
 	<typeAlias type="com.noir.menu.vo.SupplementVO" alias="SupplementVO"/>
 	<typeAlias type="com.noir.gallery.vo.PhotoVO" alias="PhotoVO"/>
-	
 	<typeAlias type="com.noir.reservation.vo.AdminReserveAddVO" alias="AdminReserveAddVO" />
 	<typeAlias type="com.noir.reservation.vo.AdminCheckSeatVO" alias="AdminCheckSeatVO" />
 	<typeAlias type="com.noir.reservation.vo.CustomerReserveFirstVO" alias="CustomerReserveFirstVO" />
@@ -40,7 +39,13 @@
 	
 	<typeAlias type="com.noir.mypage.vo.CustomerReservationVO" alias="CustomerReservationVO" />
 	<typeAlias type="com.noir.mypage.vo.NoirMemberVO" alias="NoirMemberVO" />
-	<typeAlias type="com.noir.mypage.vo.NotificationVO" alias="NotificationVO" />
+	<typeAlias type="com.noir.mypage.vo.NotificationVO" alias="NotificationVO" />	
+	
+	<typeAlias type="com.noir.review.vo.ReviewVO"  alias="ReviewVO"/>
+	<typeAlias type="com.noir.review.vo.RePhotoVO"  alias="RePhotoVO"/>
+	
+	
+	<typeAlias type="com.noir.member.vo.MemberProfileVO" alias="memberProfileVO"/>
   </typeAliases>
 
   <!--

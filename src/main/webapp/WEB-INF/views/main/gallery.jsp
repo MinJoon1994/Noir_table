@@ -10,9 +10,11 @@
 
 
 <div class="gallery-container fade-up">
+
 	<div class="icon_box fade-up" style="margin-top:50px;">
 	   <img src="${contextPath}/resources/image/noir_icon.png"/>
 	</div>
+	
 	<div class="gallery-title fade-up">
 		Gallery
 	</div>

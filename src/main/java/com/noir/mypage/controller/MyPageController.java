@@ -119,23 +119,7 @@ public class MyPageController {
 		return mav;
 		
 	}
-	// 회원 정보 수정 화면 요청
-	@RequestMapping(value="/editPage.do", method = RequestMethod.GET)
-	public ModelAndView editPage(HttpServletRequest request, HttpServletResponse response) throws Exception {
-		HttpSession session = request.getSession();
-		MemberVO member = (MemberVO) session.getAttribute("member");
-		Integer memberId = member.getId();
-		
-		NoirMemberVO noirMemberVOs = myPageService.getMemberInfo(memberId);
-		
-		ModelAndView mav = new ModelAndView();
-		
-		String viewName = (String)request.getAttribute("viewName");
-		mav.setViewName(viewName);
 
-		mav.addObject("noirMemberVO", noirMemberVOs);
-		return mav;
-	}
 	// 회원 정보 수정
 	@RequestMapping(value="/mypage/updateMember.do", method=RequestMethod.POST)
 	public void updateMemberInfo(

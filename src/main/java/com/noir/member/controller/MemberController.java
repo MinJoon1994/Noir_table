@@ -1,7 +1,13 @@
 package com.noir.member.controller;
 
+import java.io.File;
+import java.net.URLEncoder;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -22,6 +28,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.context.support.HttpRequestHandlerServlet;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -30,6 +37,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.noir.member.service.MemberService;
 import com.noir.member.vo.GoogleProfile;
 import com.noir.member.vo.KakaoProfile;
+import com.noir.member.vo.MemberProfileVO;
+import com.noir.member.vo.MemberRole;
 import com.noir.member.vo.MemberVO;
 import com.noir.member.vo.NaverProfile;
 import com.noir.member.vo.OAuthToken;
@@ -85,7 +94,9 @@ public class MemberController {
 	public ModelAndView saveGooglePhone(@RequestParam("phone")String phone,
 			HttpServletRequest req,HttpServletResponse resp)throws Exception {
 				
-		memberService.saveGooglePhone(req,phone);
+		MemberVO member = memberService.saveGooglePhone(req,phone);
+		
+		req.setAttribute("member", member);
 				
 		return new ModelAndView("forward:/WEB-INF/views/member/saveSuccess.jsp");
 	}
@@ -144,7 +155,7 @@ public class MemberController {
 	public ModelAndView login(HttpServletRequest req, HttpServletResponse resp) {
 		
 		ModelAndView mav = new ModelAndView();
-		
+		HttpSession session = req.getSession();
 		//로그인 사용자 정보 받아오기
 		MemberVO member = memberService.login(req);
 		
@@ -152,10 +163,17 @@ public class MemberController {
 			mav.setViewName("/member/loginForm");
 			return mav;
 		}
-		
-		HttpSession session = req.getSession();
+
+		if(member.getRole() == MemberRole.USER) {
+			MemberProfileVO memberProfile = memberService.findProfileById(member.getId());
+			session.setAttribute("memberProfile", memberProfile);
+		}
+
 		session.setAttribute("member", member);
-		
+
+
+		System.out.println(member.getId());
+
 		MemberVO members = (MemberVO) session.getAttribute("member");
 		Integer memberId = members.getId();
 		System.out.println("로그인한 member 객체 : " + members);
@@ -190,6 +208,10 @@ public class MemberController {
 	public ModelAndView kakaoCallback(String code,
 			HttpServletRequest req,
 			HttpServletResponse resp) throws Exception{
+		
+		String errorMsg = "이미 다른 계정에 연동된 소셜로그인 계정입니다.";
+		String encodedMsg = URLEncoder.encode(errorMsg, "UTF-8");
+		
 		ModelAndView mav = new ModelAndView();
 		
 		RestTemplate rt = new RestTemplate();
@@ -234,18 +256,41 @@ public class MemberController {
 		
 		KakaoProfile kakaoProfile = objMapper2.readValue(respEntity2.getBody(),KakaoProfile.class);
 		
-		//카카오 프로필 카카오 고유 ID로 가입되어 있는지 조회
-		MemberVO member = memberService.findByKakaoId(req,kakaoProfile);
-		
-		//조회되지 않는다면 새로 회원가입
-		if(member == null) {
-			//카카오 서비스에서 받아온 회원정보로 회원가입처리
-			member = memberService.registerKakaoLogin(req,kakaoProfile);
-		}
-		
 		HttpSession session = req.getSession();
-		session.setAttribute("member", member);
-		
+			
+	    MemberVO sessionMember = (MemberVO) session.getAttribute("member");
+
+	    if (sessionMember == null) {
+	        // (1) 비로그인 상태 → 카카오 계정으로 로그인 시도
+	        MemberVO member = memberService.findByKakaoId(req, kakaoProfile);
+	        if (member == null) {
+	            member = memberService.registerKakaoLogin(req, kakaoProfile); // 신규 가입
+	        }
+	        
+			MemberProfileVO memberProfile = memberService.findProfileById(member.getId());
+			session.setAttribute("memberProfile", memberProfile);
+	        session.setAttribute("member", member);
+	        
+	    } else {
+	        // (2) 로그인 상태인데 카카오 연동이 안 돼 있음
+	        if (sessionMember.getSns_id() == null) {
+	        	
+	        	MemberVO existing = memberService.findByKakaoId(req, kakaoProfile);
+	        	
+	            if (existing != null) {
+	                // 이미 다른 계정과 연동된 상태이므로 연동 불가
+	            	mav.setViewName("redirect:/member/snslink.do?errorMsg="+encodedMsg);
+	                return mav;
+	            }
+	        	
+	            sessionMember = memberService.registerKakaolink(sessionMember, kakaoProfile); // 연동 처리
+	            session.setAttribute("member", sessionMember);
+	    		MemberProfileVO memberProfile = memberService.findProfileById(sessionMember.getId());
+	    		session.setAttribute("memberProfile", memberProfile);
+	            
+	        }
+	    }
+	    				
 		mav.setViewName("redirect:/main.do");
 		
 		return mav;
@@ -297,15 +342,42 @@ public class MemberController {
 		
 		NaverProfile naverProfile = objectMapper.readValue(profileResponse.getBody(), NaverProfile.class);
 		
-		MemberVO member = memberService.findByNaverId(req,naverProfile);
-		
-		if(member == null) {
-			member = memberService.registerNaverLogin(req,naverProfile);
-		}
-		
 		HttpSession session = req.getSession();
-		session.setAttribute("member", member);
 		
+	    MemberVO sessionMember = (MemberVO) session.getAttribute("member");
+
+	    if (sessionMember == null) {
+	        // (1) 비로그인 상태 → 네이버 계정으로 로그인 시도
+	        MemberVO member = memberService.findByNaverId(req, naverProfile);
+	        if (member == null) {
+	            member = memberService.registerNaverLogin(req, naverProfile); // 신규 가입
+	        }
+			MemberProfileVO memberProfile = memberService.findProfileById(member.getId());
+			session.setAttribute("memberProfile", memberProfile);
+	        session.setAttribute("member", member);
+	    } else {
+	        // (2) 로그인 상태인데 네이버 연동이 안 돼 있음
+	        if (sessionMember.getSns_id() == null) {
+	        	
+	        	MemberVO existing = memberService.findByNaverId(req, naverProfile);
+	        	
+	            if (existing != null) {
+	                // 이미 다른 계정과 연동된 상태이므로 연동 불가
+
+					String errorMsg = "이미 다른 계정에 연동된 소셜로그인 계정입니다.";
+					String encodedMsg = URLEncoder.encode(errorMsg, "UTF-8");
+					
+					mav.setViewName("redirect:/member/snslink.do?errorMsg=" + encodedMsg);
+	                return mav;
+	            }
+	        	
+	            sessionMember = memberService.registerNaverlink(sessionMember, naverProfile); // 연동 처리
+	            session.setAttribute("member", sessionMember);
+	    		MemberProfileVO memberProfile = memberService.findProfileById(sessionMember.getId());
+	    		session.setAttribute("memberProfile", memberProfile);
+	        }
+	    }
+
 		mav.setViewName("redirect:/main.do");
 		
 		return mav;
@@ -358,20 +430,221 @@ public class MemberController {
 	    
 	    GoogleProfile googleProfile = mapper.readValue(profileResponse.getBody(), GoogleProfile.class);
 		
-		MemberVO member = memberService.findByGoogleId(req,googleProfile);
-		
-		if(member == null) {
-			member = memberService.registerGoogleLogin(req,googleProfile);
-		}
-		
 		HttpSession session = req.getSession();
-		session.setAttribute("member", member);
 		
-		if(member.getPhone()==null)	mav.setViewName("redirect:/member/googleForm.do");
+	    MemberVO sessionMember = (MemberVO) session.getAttribute("member");
+
+	    if (sessionMember == null) {
+	        // (1) 비로그인 상태 → 구글 계정으로 로그인 시도
+	        MemberVO member = memberService.findByGoogleId(req, googleProfile);
+	        if (member == null) {
+	            member = memberService.registerGoogleLogin(req, googleProfile); // 신규 가입
+	        }
+	        
+			MemberProfileVO memberProfile = memberService.findProfileById(member.getId());
+			session.setAttribute("memberProfile", memberProfile);
+	        session.setAttribute("member", member);
+	        
+	        if(member.getPhone() == null) {
+	        	mav.setViewName("redirect:/member/googleForm.do");
+	        	return mav;
+	        }
+	        	mav.setViewName("redirect:/main.do");
+	        
+	        return mav;
+	    } else {
+	        // (2) 로그인 상태인데 구글 연동이 안 돼 있음
+	        if (sessionMember.getSns_id() == null) {
+	        	
+	        	MemberVO existing = memberService.findByGoogleId(req, googleProfile);
+	        	
+	            if (existing != null) {
+	                // 이미 다른 계정과 연동된 상태이므로 연동 불가
+
+					String errorMsg = "이미 다른 계정에 연동된 소셜로그인 계정입니다.";
+					String encodedMsg = URLEncoder.encode(errorMsg, "UTF-8");
+					
+					mav.setViewName("redirect:/member/snslink.do?errorMsg=" + encodedMsg);
+					
+	                return mav;
+	            }
+	        	
+	            sessionMember = memberService.registerGooglelink(sessionMember, googleProfile); // 연동 처리
+	            session.setAttribute("member", sessionMember);
+	    		MemberProfileVO memberProfile = memberService.findProfileById(sessionMember.getId());
+	    		session.setAttribute("memberProfile", memberProfile);
+	        }
+	    }
 		
-		if(member.getPhone()!=null) mav.setViewName("redirect:/main.do");
+		mav.setViewName("redirect:/main.do");
 		
 		return mav;
 	}
+	
+	//멤버 개인정보 수정 페이지
+	@RequestMapping("/editPage.do")
+	public ModelAndView editPage(HttpServletRequest req,HttpServletResponse resp) {
+		
+		ModelAndView mav = new ModelAndView();
+		
+		HttpSession session = req.getSession();
+
+	
+		String viewName = (String)req.getAttribute("viewName");
+		mav.setViewName(viewName);
+		
+		return mav;
+	}
+	
+	@RequestMapping("/update.do")
+	public ModelAndView updateMember(HttpServletRequest req,
+									 @RequestParam("name") String name,
+									 @RequestParam("password") String password,
+	                                 @RequestParam(value = "profileImage", required = false) MultipartFile profileImage,
+	                                 HttpSession session) throws Exception{
+		
+	    ModelAndView mav = new ModelAndView();
+
+	    // 세션에서 현재 멤버 가져오기
+	    MemberVO member = (MemberVO) session.getAttribute("member");
+	    
+	    // 비밀번호 변경
+	    if (password != null && !password.trim().isEmpty()) {
+	        member.setPassword(password);
+	    }
+	    
+	    // 이름 변경
+	    member.setName(name);
+	    
+	    // 프로필 이미지 업로드 처리
+	    if (profileImage != null && !profileImage.isEmpty()) {
+	        String uploadDir = "C:/upload/noir/profile/";
+	        File dir = new File(uploadDir);
+	        if (!dir.exists()) dir.mkdirs(); // 디렉토리 없으면 생성
+
+	        String originalFilename = profileImage.getOriginalFilename();
+	        String uuid = UUID.randomUUID().toString();
+	        String savedName = uuid + "_" + originalFilename;
+
+	        File target = new File(uploadDir + savedName);
+	        profileImage.transferTo(target);
+
+	        // DB에는 파일 이름만 저장 (경로는 저장 안 함)
+	        member.setProfileImage(savedName);
+	    }
+	    
+	    System.out.println(member.getId());
+	    System.out.println(member.getLogin_id());
+	    System.out.println(member.getName());
+	    System.out.println(member.getPassword());
+	    System.out.println(member.getPhone());
+	    System.out.println(member.getProfileImage());
+	    System.out.println(member.getSocial_type());
+	    
+	    // TODO: 서비스 호출해서 DB 업데이트
+	    memberService.updateMember(member);
+	    
+	    // 세션도 갱신
+	    session.setAttribute("member", member);
+	    
+	    mav.setViewName("redirect:/member/editPage.do"); // 예: 마이페이지로 이동
+	    
+	    return mav;
+	}
+	
+	//소셜네트워크 서비스 연동하기 페이지
+	@RequestMapping("/snslink.do")
+	public ModelAndView snslinkPage(HttpServletRequest req,HttpServletResponse resp) {
+		
+		ModelAndView mav = new ModelAndView();
+		
+		HttpSession session = req.getSession();
+
+	
+		String viewName = (String)req.getAttribute("viewName");
+		mav.setViewName(viewName);
+		
+		return mav;
+	}
+	
+	//관리자 - 고객 관리 페이지
+	@RequestMapping("/memberlist.do")
+	public ModelAndView memberlist(@RequestParam(value = "page", defaultValue = "1") int page,
+	                               @RequestParam(value = "searchId", required = false) String searchId,
+	                               HttpServletRequest req, HttpServletResponse resp) {
+
+	    ModelAndView mav = new ModelAndView();
+	    int pageSize = 10;
+	    int startRow = (page - 1) * pageSize;
+	    int endRow = page * pageSize;
+	    
+	    List<MemberVO> memberList;
+	    int totalCount;
+
+	    if (searchId != null && !searchId.trim().isEmpty()) {
+	        // 🔍 검색어가 있으면 페이징까지 적용해서 DAO에서 조회
+	        Map<String, Object> paramMap = new HashMap<>();
+	        paramMap.put("searchId", "%" + searchId.trim() + "%");
+	        paramMap.put("startRow", startRow);
+	        paramMap.put("endRow", endRow);
+
+	        memberList = memberService.searchMemberListPaged(paramMap);
+	        totalCount = memberService.countSearchMember(searchId.trim());
+	    } else {
+	        memberList = memberService.getMemberList(pageSize, startRow);
+	        totalCount = memberService.countAllExceptAdmin();
+	    }
+
+	    List<MemberProfileVO> memberProfileList = memberService.getMemberProfileList();
+
+	    int totalPages = (int) Math.ceil((double) totalCount / pageSize);
+
+	    req.setAttribute("memberList", memberList);
+	    req.setAttribute("memberProfileList", memberProfileList);
+	    req.setAttribute("currentPage", page);
+	    req.setAttribute("totalPages", totalPages);
+	    req.setAttribute("searchId", searchId);
+
+	    mav.setViewName("/member/memberlist");
+	    return mav;
+	}
+	
+	//전체 고객 등급/정보 갱신
+	@RequestMapping("/updateCustomerInfo.do")
+	public ModelAndView updateCustomerInfo(HttpServletRequest req,HttpServletResponse resp) {
+		
+		ModelAndView mav = new ModelAndView();
+		
+		HttpSession session = req.getSession();
+		
+		List<MemberProfileVO> memberProfileList = memberService.updateCustomerInfo();
+				
+		mav.setViewName("redirect:/member/memberlist.do");
+		
+		return mav;
+		
+	}
+	
+	@RequestMapping("/vipList.do")
+	public ModelAndView getVipList(HttpServletRequest req,HttpServletResponse resp) {
+		
+		ModelAndView mav = new ModelAndView();
+		
+		HttpSession session = req.getSession();
+		
+		List<MemberVO> memberList = memberService.getVIPMemberList();
+		
+		req.setAttribute("memberList", memberList);
+		
+		List<MemberProfileVO> memberProfileList = memberService.getMemberProfileList();
+		
+		req.setAttribute("memberProfileList", memberProfileList);
+		
+		mav.setViewName("/member/memberlist");
+		
+		return mav;
+		
+	}
+	
 	
 }
