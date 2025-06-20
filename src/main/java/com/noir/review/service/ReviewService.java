@@ -18,7 +18,7 @@ public interface ReviewService {
 	//리뷰게시판 상세페이지 다음글
 	ReviewVO getNextReview(Long reviewId) throws Exception;
 	//리뷰게시판 글쓰기
-	void addReviewWithImages(ReviewVO review, List<MultipartFile> images, String uploadDir) throws Exception;
+	void addReviewWithImages(ReviewVO review) throws Exception;
 	//리뷰게시판 수정(업데이트)
 	void updateReviewWithImages(ReviewVO review, List<MultipartFile> images, String uploadDir) throws Exception;
 	//리뷰게시판 삭제하기

@@ -2,13 +2,19 @@ package com.noir.review.service;
 
 import java.util.List;
 import java.util.UUID;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
 import java.io.File;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.noir.member.vo.MemberVO;
 import com.noir.review.dao.ReviewDAOImpl;
+import com.noir.review.vo.ReviewCustomerVO;
 import com.noir.review.vo.ReviewVO;
 
 @Service
@@ -30,10 +36,8 @@ public class ReviewServiceImpl implements ReviewService {
 	//리뷰게시판 상세페이지 보기
 	@Override
 	public ReviewVO getReviewById(Long reviewId) throws Exception {
-		ReviewVO review = reviewDAO.selectReviewById(reviewId);
-		if (review != null)
-			review.setPhotoUrls(reviewDAO.selectReviewPhotos(reviewId));
-		return review;
+		
+		return null;
 	}
 	//리뷰게시판 상세페이지 이전글
 	@Override
@@ -47,26 +51,9 @@ public class ReviewServiceImpl implements ReviewService {
 	}
 
 	@Override
-	public void addReviewWithImages(ReviewVO review, List<MultipartFile> images, String uploadDir) throws Exception {
-		reviewDAO.insertReview(review); // reviewId 생성
-		Long reviewId = review.getReviewId();
-		String reviewFolderPath = uploadDir + File.separator + reviewId;
-		File dir = new File(reviewFolderPath);
-		if (!dir.exists()) dir.mkdirs();
-
-		if (images != null) {
-			for (MultipartFile file : images) {
-				if (!file.isEmpty()) {
-					 String ext = getExtension(file.getOriginalFilename());
-	                    if (!isImageExt(ext)) continue; // 이미지 확장자만
-	                    String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
-	                    File dest = new File(dir, fileName);
-	                    file.transferTo(dest);
-	                    String photoUrl = "/resources/review/" + reviewId + "/" + fileName;
-	                    reviewDAO.insertReviewPhoto(reviewId, photoUrl);
-				}
-			}
-		}
+	public void addReviewWithImages(ReviewVO review) throws Exception {
+		
+		reviewDAO.insertReview(review);
 	}
 
 	@Override
@@ -117,5 +104,31 @@ public class ReviewServiceImpl implements ReviewService {
 
 	private boolean isImageExt(String ext) {
 		return ext.equals("jpg") || ext.equals("jpeg") || ext.equals("png") || ext.equals("gif");
+	}
+	
+	
+	//고객 리뷰 남길수 있는 목록 불러오기
+	public List<ReviewCustomerVO> getCustomerReservation(HttpServletRequest request) {
+		
+		HttpSession session = request.getSession();
+		
+		MemberVO member = (MemberVO) session.getAttribute("member");
+		
+		int member_id = member.getId();
+		
+		List<ReviewCustomerVO> list = reviewDAO.findReserveByMemberId(member_id);
+		
+		return list;
+				
+	}
+	
+	//고객 리뷰 남길수 있는 목록 불러오기
+	public List<ReviewCustomerVO> getCustomerReservation2(HttpServletRequest request) {
+		
+
+		List<ReviewCustomerVO> list = reviewDAO.findReserve();
+		
+		return list;
+		
 	}
 }

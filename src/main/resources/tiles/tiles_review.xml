@@ -13,23 +13,27 @@
       
        -->
 
-	<definition name="/review" extends="baseLayout">
-		<put-attribute name="title" value="리뷰 게시판" />
+	<definition name="/review/list" extends="baseLayout">
+		<put-attribute name="title" value="𝐍𝐎𝐈𝐑 | review" />
+		<put-attribute name="header" value="/WEB-INF/views/common/main_header.jsp" />
 		<put-attribute name="body" value="/WEB-INF/views/review/list.jsp" />
 	</definition>
 
 	<definition name="/review/detail" extends="baseLayout">
-	    <put-attribute name="title" value="리뷰 상세보기" />
+	    <put-attribute name="title" value="𝐍𝐎𝐈𝐑 | detail" />
+	    <put-attribute name="header" value="/WEB-INF/views/common/main_header.jsp" />
 	    <put-attribute name="body" value="/WEB-INF/views/review/detail.jsp" />
 	</definition>
 
 	<definition name="/review/write" extends="baseLayout">
-	    <put-attribute name="title" value="리뷰 작성" />
+	    <put-attribute name="title" value="𝐍𝐎𝐈𝐑 | review" />
+	    <put-attribute name="header" value="/WEB-INF/views/common/main_header.jsp" />
 	    <put-attribute name="body" value="/WEB-INF/views/review/reviewForm.jsp" />
 	</definition>
 
 	<definition name="/review/edit" extends="baseLayout">
-	    <put-attribute name="title" value="리뷰 수정" />
+	    <put-attribute name="title" value="𝐍𝐎𝐈𝐑 | review" />
+	    <put-attribute name="header" value="/WEB-INF/views/common/main_header.jsp" />
 	    <put-attribute name="body" value="/WEB-INF/views/review/reviewForm.jsp" />
 	</definition>
       

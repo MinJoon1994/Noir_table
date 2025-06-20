@@ -9,14 +9,23 @@ public class ReviewVO {
 	private String title;
 	private String content;
 	private int rating;
-	private int reservationId;
-	private List<String> photoUrls; // 멀티 이미지 지원
-
-	// 예약 정보
-    private Date reservationDate;
-    private String mealType;
+	private int customer_id; //고객 예약 ID
+	private String photoUrls; // 멀티 이미지 지원
 	
-
+	private String userName;
+	
+	public String getUserName() {
+		return userName;
+	}
+	public void setUserName(String userName) {
+		this.userName = userName;
+	}
+	public int getCustomer_id() {
+		return customer_id;
+	}
+	public void setCustomer_id(int customer_id) {
+		this.customer_id = customer_id;
+	}
 	public Long getReviewId() {
 		return reviewId;
 	}
@@ -41,45 +50,14 @@ public class ReviewVO {
 	public void setRating(int rating) {
 		this.rating = rating;
 	}
-	public int getReservationId() {
-		return reservationId;
-	}
-	public void setReservationId(int reservationId) {
-		this.reservationId = reservationId;
-	}
-	public List<String> getPhotoUrls()
+
+	public String getPhotoUrls()
 	{ 
 		return photoUrls;
 	}
-    public void setPhotoUrls(List<String> photoUrls)
+    public void setPhotoUrls(String photoUrls)
     {
     	this.photoUrls = photoUrls;
     }
 
-    public Date getReservationDate() {
-		return reservationDate;
-	}
-	public void setReservationDate(Date reservationDate) {
-		this.reservationDate = reservationDate;
-	}
-	public String getMealType() {
-		return mealType;
-	}
-	public void setMealType(String mealType) {
-		this.mealType = mealType;
-	}
-    @Override
-    public String toString() {
-        return "ReviewVO{" +
-                "reviewId=" + reviewId +
-                ", title='" + title + '\'' +
-                ", content='" + content + '\'' +
-                ", rating=" + rating +
-                ", reservationId=" + reservationId +
-                ", reservationDate=" + reservationDate +
-                ", mealType='" + mealType + '\'' +
-                ", photoUrls=" + photoUrls +
-                '}';
-    }
-	
 }

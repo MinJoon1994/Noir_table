@@ -1,50 +1,247 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8"%>
-
-<%-- JSTL 중에서 core 태그를 사용하기 위해 주소를 import --%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-
-<%-- 한글 인코딩 --%>
 <% request.setCharacterEncoding("UTF-8"); %>
-
-<%-- 현재 웹 애플리케이션(프로젝트)의 기본 경로를 가져옵니다. --%>
-<%-- 예를 들어, 프로젝트 주소가 http://localhost:8090/noir/review/write.do --%>
-<%-- 예를 들어, 프로젝트 주소가 http://localhost:8090/noir/review/edit.do --%>
 <c:set var="contextPath" value="${pageContext.request.contextPath}"/>
 
+<!-- FontAwesome for stars -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-<link rel="stylesheet" href="${contextPath}/resources/css/review/star.css">
-<link rel="stylesheet" href="${contextPath}/resources/css/review/paging.css">
 
-<h2>${formTitle}</h2>
-<form action="${formAction}" method="post" enctype="multipart/form-data">
-    <c:if test="${not empty review.reviewId}">
-        <input type="hidden" name="reviewId" value="${review.reviewId}" />
-    </c:if>
-    <label>제목: <input type="text" name="title" value="${review.title}" required /></label><br>
-    <label>내용: <textarea name="content" required rows="5" cols="50">${review.content}</textarea></label><br>
-    <label>별점:
-        <select name="rating" required>
-            <option value="">선택</option>
-            <c:forEach var="i" begin="1" end="5">
-                <option value="${i}" <c:if test="${review.rating == i}">selected</c:if>>${i}점</option>
-            </c:forEach>
-        </select>
-    </label><br>
-    <label>예약 ID:
-        <input type="number" name="reservationId_view" value="${review.reservationId}" required readonly disabled />
-        <input type="hidden" name="reservationId" value="${review.reservationId}" />
-    </label><br>
-    <label>이미지 첨부:
-        <input type="file" name="images" multiple accept="image/*"/>
-    </label>
-    <c:if test="${not empty review.photoUrls}">
-        <div>
-            <c:forEach var="img" items="${review.photoUrls}">
-                <img src="${img}" width="80"/>
-            </c:forEach>
-        </div>
-    </c:if>
-    <button type="submit">${submitBtnText}</button>
-    <a href="${contextPath}/review.do">취소</a>
+<style>
+/* 페이드 인 */
+.fade-up {
+  opacity: 0;
+  transform: translateY(50px);
+  transition: opacity 1.2s ease-out, transform 1.2s ease-out;
+}
+.fade-up.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* 상단 아이콘 */
+.icon_box {
+  display: flex;
+  justify-content: center;
+}
+.icon_box img {
+  width: 50px;
+  height: 50px;
+}
+
+body {
+    font-family: 'Noto Sans KR', sans-serif;
+    background: white;
+}
+
+form {
+    max-width: 600px;
+    margin: 40px auto;
+    padding: 30px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 0 12px rgba(0,0,0,0.08);
+}
+
+form h1 {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+label {
+    font-weight: bold;
+}
+
+input[type="text"],
+textarea,
+select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 1rem;
+}
+
+button[type="submit"] {
+    width: 100%;
+    padding: 12px;
+    background: #333;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 1.1rem;
+    cursor: pointer;
+}
+
+.star-rating {
+    display: flex;
+    gap: 8px;
+    font-size: 28px;
+    cursor: pointer;
+}
+
+.star-rating .fa-star {
+    color: #ccc;
+    transition: color 0.2s;
+}
+
+.star-rating .fa-star.hovered,
+.star-rating .fa-star.selected {
+    color: #FFD700;
+}
+
+.line{
+	margin-bottom:20px;
+}
+
+#preview img {
+    max-width: 100%;
+    max-height: 300px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    margin-top: 10px;
+    display: block;
+}
+</style>
+
+
+<div class="icon_box fade-up" style="margin-top:30px; margin-bottom:20px;">
+  <img src="${contextPath}/resources/image/noir_icon.png"/>
+</div>
+<h2 class="fade-up" style="text-align: center;">리뷰 작성</h2>
+
+<form action="${contextPath}/review/write.do" method="post" enctype="multipart/form-data" class="fade-up">
+	<!-- 예약 선택 -->
+	<!-- 고객 예약 ID -->
+	<div class="line">
+	    <label for="customer_id">리뷰 작성할 예약 선택</label><br>
+	    <select name="customer_id" id="customer_id" required>
+	        <option value="">예약을 선택하세요</option>
+	        <c:forEach var="reserve" items="${reserveList}">
+	          <c:if test="${reserve.status == 'ACTIVE'}">
+	            <option value="${reserve.customer_id}">
+	                ${reserve.reviewAdminVO.reserve_date} / ${reserve.reviewAdminVO.meal_time} (${reserve.reviewAdminVO.time_slot})
+	            </option>
+	           </c:if> 
+	        </c:forEach>
+	    </select>
+	</div>
+
+    <!-- 제목 -->
+    <div class="line">
+        <label for="title">제목</label><br>
+        <input type="text" id="title" name="title" required>
+    </div>
+
+    <!-- 내용 -->
+    <div class="line">
+        <label for="content">내용</label><br>
+        <textarea id="content" name="content" rows="6" cols="50" required></textarea>
+    </div>
+
+	<!-- 별점 -->
+	<div class="form-group line">
+	    <label>별점</label><br>
+	    <div class="star-rating">
+	        <i class="fa fa-star" data-value="1"></i>
+	        <i class="fa fa-star" data-value="2"></i>
+	        <i class="fa fa-star" data-value="3"></i>
+	        <i class="fa fa-star" data-value="4"></i>
+	        <i class="fa fa-star" data-value="5"></i>
+	    </div>
+	    <input type="hidden" id="rating" name="rating" value="0" required>
+	</div>
+
+	<!-- 이미지 업로드 -->
+	<div class="form-group">
+	    <label for="photoUrls">사진 첨부</label><br>
+		<input type="file" id="photoUrls" name="photoUrls" accept="image/*" onchange="previewImage(this)">
+	    <img id="preview" style="display:none; margin-top:10px; max-width:100%; max-height:300px; border-radius:8px; border:1px solid #ccc;">
+	    
+	</div>
+
+    <!-- 제출 버튼 -->
+    <div style="margin-top: 20px;">
+        <button type="submit">리뷰 작성</button>
+    </div>
 </form>
+
+<script>
+
+function previewImage(input) {
+  const preview = document.getElementById("preview");
+  const file = input.files[0];
+
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      preview.src = e.target.result;
+      preview.style.display = 'block';
+    }
+    reader.readAsDataURL(file);
+  } else {
+    preview.src = '';
+    preview.style.display = 'none';
+  }
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+    const stars = document.querySelectorAll(".star-rating .fa-star");
+    const ratingInput = document.getElementById("rating");
+
+    stars.forEach(star => {
+        star.addEventListener("mouseenter", () => {
+            const value = parseInt(star.dataset.value);
+            highlightStars(value);
+        });
+
+        star.addEventListener("mouseleave", () => {
+            resetStars();
+        });
+
+        star.addEventListener("click", () => {
+            const value = parseInt(star.dataset.value);
+            ratingInput.value = value;
+            selectStars(value);
+        });
+    });
+
+    function highlightStars(value) {
+        stars.forEach(star => {
+            const val = parseInt(star.dataset.value);
+            star.classList.toggle("hovered", val <= value);
+        });
+    }
+
+    function resetStars() {
+        stars.forEach(star => star.classList.remove("hovered"));
+    }
+
+    function selectStars(value) {
+        stars.forEach(star => {
+            const val = parseInt(star.dataset.value);
+            star.classList.toggle("selected", val <= value);
+        });
+    }
+});
+
+//페이드 인 효과
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('show');
+      observer.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.2 });
+
+document.querySelectorAll('.fade-up').forEach(section => {
+  observer.observe(section);
+});
+
+console.log("⭐ 이미지 업로드 스크립트 시작됨");
+
+</script>

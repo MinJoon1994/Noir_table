@@ -31,11 +31,25 @@
 		<result property="title" column="title"/>
 		<result property="content" column="content"/>
 		<result property="rating" column="rating"/>
-		<result property="reservationId" column="reservation_id"/>
-		<result property="reservationDate" column="reservation_date"/>
-		<result property="mealType" column="meal_type"/>
+		<result property="customer_id" column="customer_id"/>
+		<result property="photoUrls" column="photo_url"/>
 	</resultMap>
-
+	
+	<resultMap id="reviewCustomerMap" type="com.noir.review.vo.ReviewCustomerVO">
+		<id property="customer_id" column="customer_id"/>
+		<result property="member_id" column="member_id"/>
+		<result property="seat_id" column="seat_id"/>
+		<result property="reserve_id" column="reserve_id"/>
+		<result property="status" column="status"/>
+	</resultMap>
+	
+	<resultMap id="reviewAdminMap" type="com.noir.review.vo.ReviewAdminVO">
+		<id property="reserve_id" column="reserve_id"/>
+		<result property="meal_time" column="meal_time"/>
+		<result property="reserve_date" column="reserve_date"/>
+		<result property="time_slot" column="time_slot"/>
+		<result property="created_at" column="created_at"/>
+	</resultMap>
 
 	<!--
 	=========================================================
@@ -56,19 +70,19 @@
 
 	<!--   리뷰 리스트 (예약정보 JOIN) 페이징 쿼리 추가 -->
 	<select id="selectReviewsByPaging" resultMap="reviewMap" parameterType="map">
-	    SELECT * FROM (
-	        SELECT inner_query.*, ROWNUM rn
-	        FROM (
-	            SELECT r.review_id, r.title, r.content, r.rating, r.reservation_id,
-	                   res.reservation_date, res.meal_type
-	            FROM noir_review r
-	            LEFT JOIN noir_reservation res ON r.reservation_id = res.reservation_id
-	            
-	            ORDER BY r.review_id DESC
-	        ) inner_query
-	        WHERE ROWNUM &lt;= #{offset} + #{limit}
-	    )
-	    WHERE rn &gt; #{offset}
+	  SELECT * FROM (
+	    SELECT inner_query.*, ROWNUM rn
+	    FROM (
+	      SELECT r.review_id, r.title, r.content, r.rating, r.customer_id,
+	             cr.reserve_id, cr.status, cr.seat_id, cr.member_id
+	      FROM noir_review r
+	      LEFT JOIN customer_reservation cr
+	        ON r.customer_id = cr.customer_id
+	      ORDER BY r.review_id DESC
+	    ) inner_query
+	    WHERE ROWNUM &lt;= #{offset} + #{limit}
+	  )
+	  WHERE rn &gt; #{offset}
 	</select>	
 
 	<!-- 전체 카운트 쿼리 추가 -->
@@ -108,15 +122,24 @@
         )
         WHERE ROWNUM = 1
 	</select>
-
+	
+	<select id="findReserveByMemberId" parameterType="int" resultMap="reviewCustomerMap">
+		
+		SELECT * FROM customer_reservation where member_id = #{member_id}
+		
+	</select>
+	
+	<select id="findAdminByReserveId" parameterType="int" resultMap="reviewAdminMap">
+		
+		SELECT * FROM admin_reservation where reserve_id = #{reserve_id}
+		
+	</select>
+	
 
 	<!-- 리뷰 등록 (리뷰ID 반환) -->
-	<insert id="insertReview" parameterType="com.noir.review.vo.ReviewVO" useGeneratedKeys="true" keyProperty="reviewId">
-		INSERT INTO noir_review (review_id, title, content, rating, photo_url)
-		VALUES (noir_review_seq.NEXTVAL, #{title}, #{content}, #{rating}, #{reservationId})
-		<selectKey resultType="long" order="AFTER" keyProperty="reviewId">
-			SELECT noir_review_seq.CURRVAL FROM DUAL
-		</selectKey>
+	<insert id="insertReview" parameterType="com.noir.review.vo.ReviewVO">
+		INSERT INTO noir_review (review_id, title, content, rating, photo_url,customer_id)
+		VALUES (seq_noir_review_id.NEXTVAL, #{title}, #{content}, #{rating}, #{photoUrls}, #{customer_id})
 	</insert>
 
 	<!-- 리뷰 수정 -->
@@ -145,5 +168,9 @@
 	<!-- 특정 리뷰의 모든 이미지 URL 목록 -->
 	<select id="selectReviewPhotos" parameterType="long" resultType="string">
 		SELECT photo_url FROM noir_photo WHERE review_id = #{reviewId}
+	</select>
+	
+	<select id="findReserve" resultMap="reviewCustomerMap">
+			SELECT * FROM customer_reservation
 	</select>
 </mapper>

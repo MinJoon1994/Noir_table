@@ -11,62 +11,144 @@
 <%-- 예를 들어, 프로젝트 주소가 http://localhost:8090/noir/review.do --%>
 <c:set var="contextPath" value="${pageContext.request.contextPath}"/>
 
-<c:out value="${contextPath}"/>
-
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-<link rel="stylesheet" href="${contextPath}/resources/css/review/star.css">
 <link rel="stylesheet" href="${contextPath}/resources/css/review/paging.css">
-<link rel="stylesheet" href="${contextPath}/resources/css/review/list.css">
+<style>
+/* 페이드 인 */
+.fade-up {
+  opacity: 0;
+  transform: translateY(50px);
+  transition: opacity 1.2s ease-out, transform 1.2s ease-out;
+}
+.fade-up.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* 상단 아이콘 */
+.icon_box {
+  display: flex;
+  justify-content: center;
+}
+.icon_box img {
+  width: 50px;
+  height: 50px;
+}
+
+.fa-star {
+  transition: transform 0.15s;
+}
+.fa-star:hover {
+  transform: scale(1.2) rotate(-10deg);
+  color: #ffbc42 !important;
+}
+
+.review-table {
+  width: 80%;
+  margin: 40px auto;
+  border-collapse: collapse;
+  font-family: 'Noto Sans KR', sans-serif;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.05);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.review-table th, .review-table td {
+  padding: 12px;
+  border-bottom: 1px solid #e5e5e5;
+}
+
+.review-table thead {
+  background-color: black;
+  color: white;
+}
+
+/* tr 호버 시 볼록하게 */
+.body-tr {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  cursor: pointer;
+}
+.body-tr:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.review-table th, .review-table td {
+  padding: 15px 12px;
+  border-bottom: 1px solid #ddd;
+  text-align: center;         /* ✅ 가로 중앙 정렬 */
+  vertical-align: middle;     /* ✅ 세로 중앙 정렬 */
+}
 
 
-<h2>리뷰 목록</h2>
-<table border="1" style="width:100%; border-collapse:collapse; text-align:center;">
+.review-table a {
+  color: #333;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.review-table a:hover {
+  color: #555;
+  text-decoration: underline;
+}
+
+</style>
+<div class="icon_box fade-up" style="margin-top:30px; margin-bottom:20px;">
+  <img src="${contextPath}/resources/image/noir_icon.png"/>
+</div>
+<h2 class="fade-up" style="text-align: center;">리뷰 목록</h2>
+<table class="review-table fade-up">
+    <colgroup>
+        <col style="width: 10%;">   <!-- 번호 -->
+        <col style="width: 60%;">  <!-- 제목 -->
+        <col style="width: 10%;">  <!-- 별점 -->
+        <col style="width: 10%;">  <!-- 작성자 -->
+        <col style="width: 10%;">  <!-- 식사종류 -->
+    </colgroup>
 	<thead>
 		<tr>
 			<th>번호</th>
 			<th>제목</th>
-			<th>내용</th>
 			<th>별점</th>
-			<th>사진</th>
-			<th>예약일자</th>
-			<th>식사타입</th>
+			<th>작성자</th>
+			<th>식사종류</th>
 		</tr>
 	</thead>
 	<tbody>
-		<c:forEach var="review" items="${reviewList}">
-			<tr>
-				<td>${review.reviewId}</td>
-				<td><a href="${contextPath}/review/detail.do?reviewId=${review.reviewId}">${review.title}</a></td>
-				<td style="max-width:200px; white-space:pre-line;">${review.content}</td>
-				<td>
-					<c:forEach var="i" begin="1" end="5">
-						<i class="${i <= review.rating ? 'fas' : 'far'} fa-star" style="color:#FFD700"></i>
-					</c:forEach>
-				</td>
-				<td>
-					<c:choose>
-						<c:when test="${not empty review.photoUrls}">
-							<c:forEach var="img" items="${review.photoUrls}">
-								<img src="${img}" width="80" style="border-radius:8px;"/>
-							</c:forEach>
-						</c:when>
-						<c:otherwise>
-							이미지 없음
-						</c:otherwise>
-					</c:choose>
-				</td>
-				<td>${review.reservationDate}</td>
-				<td>${review.mealType}</td>
-			</tr>
-		</c:forEach>
+	    <c:forEach var="review" items="${reviewList}">
+	        <tr class="body-tr">
+	            <td>${review.reviewId}</td>
+	            <td><a href="${contextPath}/review/detail.do?reviewId=${review.reviewId}">${review.title}</a></td>
+	            <td>
+	                <c:forEach var="i" begin="1" end="5">
+	                    <i class="${i <= review.rating ? 'fas' : 'far'} fa-star" style="color:#FFD700"></i>
+	                </c:forEach>
+	            </td>
+	            <td>${review.userName}</td>
+	
+	            <!-- ✅ reserveList에서 customer_id 매칭되는 meal_time 찾기 -->
+	            <td>
+	                <c:forEach var="reserve" items="${reserveList}">
+	                    <c:if test="${reserve.customer_id == review.customer_id}">
+	                        ${reserve.reviewAdminVO.meal_time}
+	                    </c:if>
+	                </c:forEach>
+	            </td>
+	        </tr>
+	    </c:forEach>
 	</tbody>
 </table>
 
-<a href="${contextPath}/review/write.do">리뷰 작성</a><br>
-
+<c:if test="${not empty sessionScope.member}">
+  <div class="fade-up" style="text-align: center; margin-top: 20px;">
+    <a href="${contextPath}/review/write.do" style="padding: 10px 20px; background: #333; color: white; text-decoration: none; border-radius: 6px;">
+      리뷰 작성
+    </a>
+  </div>
+</c:if>
 <!-- 페이징 및 블록페이징 처리 -->
 <center>
-	<div class="pagination" style="text-align:center; clear:both;">
+	<div class="pagination fade-up" style="text-align:center; clear:both; margin-bottom:50px;">
 		<c:if test="${startBlock > 1}">
 			<a href="${contextPath}/review.do?page=${startBlock - 1}">이전</a>
 		</c:if>
@@ -88,4 +170,18 @@
 	</div>
 </center>            
 
+<script>
+// 페이드 인 효과
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('show');
+      observer.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.2 });
 
+document.querySelectorAll('.fade-up').forEach(section => {
+  observer.observe(section);
+});
+</script>

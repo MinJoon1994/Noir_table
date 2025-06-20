@@ -6,6 +6,9 @@ import java.util.Map;
 import org.apache.ibatis.session.SqlSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+
+import com.noir.review.vo.ReviewAdminVO;
+import com.noir.review.vo.ReviewCustomerVO;
 import com.noir.review.vo.ReviewVO;
 
 @Repository
@@ -19,7 +22,21 @@ public class ReviewDAOImpl implements ReviewDAO {
 	    Map<String, Object> param = new HashMap<>();
 	    param.put("offset", offset);
 	    param.put("limit", limit);
-	    return sqlSession.selectList("mapper.review.selectReviewsByPaging", param);
+	    
+	    List<ReviewVO> list = sqlSession.selectList("mapper.review.selectReviewsByPaging", param);
+	    	
+	    for(ReviewVO review : list) {
+	    	
+	    	int customer_id = review.getCustomer_id();
+	    	
+	    	int member_id = sqlSession.selectOne("mapper.member.findMeberIdByCustomerId",customer_id);
+	    	
+	    	String userName = sqlSession.selectOne("mapper.member.findNameByMemberId",member_id);
+	    	
+	    	review.setUserName(userName);
+	    }
+	    
+	    return list;
 	}
 
 	@Override
@@ -73,6 +90,40 @@ public class ReviewDAOImpl implements ReviewDAO {
 	@Override
 	public void deleteReviewPhotos(Long reviewId) throws Exception {
 		sqlSession.delete("mapper.review.deleteReviewPhotos", reviewId);
+	}
+	
+	public List<ReviewCustomerVO> findReserveByMemberId(int member_id) {
+		
+		List<ReviewCustomerVO> list = sqlSession.selectList("mapper.review.findReserveByMemberId",member_id);
+		
+		for(ReviewCustomerVO reserve : list) {
+			
+			int reserve_id = reserve.getReserve_id();
+			
+			ReviewAdminVO adminVO =  sqlSession.selectOne("mapper.review.findAdminByReserveId",reserve_id);
+			
+			reserve.setReviewAdminVO(adminVO);	
+			
+		}
+		
+		return list;
+	}
+
+	public List<ReviewCustomerVO> findReserve() {
+		
+		List<ReviewCustomerVO> list = sqlSession.selectList("mapper.review.findReserve");
+		
+		for(ReviewCustomerVO reserve : list) {
+			
+			int reserve_id = reserve.getReserve_id();
+			
+			ReviewAdminVO adminVO =  sqlSession.selectOne("mapper.review.findAdminByReserveId",reserve_id);
+			
+			reserve.setReviewAdminVO(adminVO);	
+			
+		}
+		
+		return list;
 	}
 
 }	

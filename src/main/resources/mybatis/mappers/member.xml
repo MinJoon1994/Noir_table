@@ -253,4 +253,12 @@
 	  WHERE login_id LIKE '%' || #{trim} || '%'
 	    AND login_id != 'admin'
 	</select>
+	
+	<select id="findMeberIdByCustomerId" parameterType="int" resultType="int">
+		select member_id from customer_reservation where customer_id=#{customer_id}
+	</select>
+	
+	<select id="findNameByMemberId" parameterType="int" resultType="String">
+		select name from noir_member where member_id = #{member_id}
+	</select>
 </mapper>

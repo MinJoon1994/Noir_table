@@ -113,7 +113,7 @@
       <c:if test="${not empty sessionScope.member}">
 		<a href="<c:url value='/mypage.do'/>">MYPAGE</a>
 	  </c:if>
-      <a href="<c:url value='/review.do'/>">REVIEW</a>
+      <a href="<c:url value='/review/list.do'/>">REVIEW</a>
     </nav>
     
 	<c:choose>
