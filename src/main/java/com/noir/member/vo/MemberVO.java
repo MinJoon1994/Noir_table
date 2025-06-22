@@ -1,8 +1,5 @@
 package com.noir.member.vo;
 
-import org.springframework.stereotype.Component;
-
-@Component
 public class MemberVO {
 	
 	int id;

@@ -19,10 +19,8 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class MemberService {
-	
-	@Autowired
-	MemberVO memberVO;
-	
+
+
 	@Autowired
 	MemberDAO memberDAO;
 	
@@ -33,6 +31,8 @@ public class MemberService {
 		String password = req.getParameter("password");
 		String name = req.getParameter("name");
 		String phone = req.getParameter("phone");
+		
+		MemberVO memberVO = new MemberVO();
 		
 		memberVO.setLogin_id(loginId);
 		memberVO.setPassword(password);
