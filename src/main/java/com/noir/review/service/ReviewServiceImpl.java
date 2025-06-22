@@ -35,19 +35,11 @@ public class ReviewServiceImpl implements ReviewService {
 
 	//리뷰게시판 상세페이지 보기
 	@Override
-	public ReviewVO getReviewById(Long reviewId) throws Exception {
+	public ReviewVO getReviewById(int reviewId) throws Exception {
 		
-		return null;
-	}
-	//리뷰게시판 상세페이지 이전글
-	@Override
-	public ReviewVO getPrevReview(Long reviewId) throws Exception {
-	    return reviewDAO.selectPrevReview(reviewId);
-	}
-	//리뷰게시판 상세페이지 다음글
-	@Override
-	public ReviewVO getNextReview(Long reviewId) throws Exception {
-	    return reviewDAO.selectNextReview(reviewId);
+		ReviewVO review = reviewDAO.selectReviewById(reviewId);
+		
+		return review;
 	}
 
 	@Override
@@ -58,34 +50,12 @@ public class ReviewServiceImpl implements ReviewService {
 
 	@Override
 	public void updateReviewWithImages(ReviewVO review, List<MultipartFile> images, String uploadDir) throws Exception {
-		reviewDAO.updateReview(review);
-		Long reviewId = review.getReviewId();
-		// 기존 이미지 DB/폴더 삭제
-		reviewDAO.deleteReviewPhotos(reviewId);
-
-		// 새 이미지 저장
-		String reviewFolderPath = uploadDir + File.separator + reviewId;
-		File dir = new File(reviewFolderPath);
-		if (!dir.exists()) dir.mkdirs();
-
-		if (images != null) {
-			for (MultipartFile file : images) {
-				if (!file.isEmpty()) {
-					String ext = getExtension(file.getOriginalFilename());
-					if (!isImageExt(ext)) continue;
-					String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
-					File dest = new File(dir, fileName);
-					file.transferTo(dest);
-					String photoUrl = "/resources/review/" + reviewId + "/" + fileName;
-					reviewDAO.insertReviewPhoto(reviewId, photoUrl);
-				}
-			}
-		}
+		
 	}
 
 	//리뷰게시판 삭제하기
 	@Override
-	public void deleteReview(Long reviewId, String uploadDir) throws Exception {
+	public void deleteReview(int reviewId, String uploadDir) throws Exception {
 		reviewDAO.deleteReviewPhotos(reviewId);
 		reviewDAO.deleteReview(reviewId);
 		// 폴더 삭제
@@ -130,5 +100,11 @@ public class ReviewServiceImpl implements ReviewService {
 		
 		return list;
 		
+	}
+	
+	
+	public ReviewCustomerVO getReserveByCustomId(int customer_id) {
+		
+		return reviewDAO.getReserveByCustomId(customer_id);
 	}
 }

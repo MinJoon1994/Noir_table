@@ -12,15 +12,11 @@ public interface ReviewService {
 	List<ReviewVO> getReviewsByPaging(int offset, int limit) throws Exception;
 	int getReviewCount() throws Exception;
 	//리뷰게시판 상세페이지 보기
-	ReviewVO getReviewById(Long reviewId) throws Exception;
-	//리뷰게시판 상세페이지 이전글
-	ReviewVO getPrevReview(Long reviewId) throws Exception;
-	//리뷰게시판 상세페이지 다음글
-	ReviewVO getNextReview(Long reviewId) throws Exception;
+	ReviewVO getReviewById(int reviewId) throws Exception;
 	//리뷰게시판 글쓰기
 	void addReviewWithImages(ReviewVO review) throws Exception;
 	//리뷰게시판 수정(업데이트)
 	void updateReviewWithImages(ReviewVO review, List<MultipartFile> images, String uploadDir) throws Exception;
 	//리뷰게시판 삭제하기
-	void deleteReview(Long reviewId, String uploadDir) throws Exception;
+	void deleteReview(int reviewId, String uploadDir) throws Exception;
 }

@@ -11,13 +11,8 @@ public interface ReviewDAO {
 	int selectReviewCount() throws Exception;
 
 	//리뷰게시판 상세페이지 보기
-	ReviewVO selectReviewById(Long reviewId) throws Exception;
+	ReviewVO selectReviewById(int reviewId) throws Exception;
 
-	//리뷰게시판 상세페이지 이전글
-	ReviewVO selectPrevReview(Long reviewId) throws Exception;
-	//리뷰게시판 상세페이지 다음글
-	ReviewVO selectNextReview(Long reviewId) throws Exception;
-	
 	//리뷰게시판 글쓰기
 	void insertReview(ReviewVO review) throws Exception;
 
@@ -25,13 +20,13 @@ public interface ReviewDAO {
 	void updateReview(ReviewVO review) throws Exception;
 
 	//리뷰게시판 삭제하기
-	void deleteReview(Long reviewId) throws Exception;
+	void deleteReview(int reviewId) throws Exception;
 
 	// 이미지 관련
 	List<String> selectReviewPhotos(Long reviewId) throws Exception;
 	//리뷰게시판 포토 삽입
-	void insertReviewPhoto(Long reviewId, String photoUrl) throws Exception;
+	void insertReviewPhoto(int reviewId, String photoUrl) throws Exception;
 	//리뷰게시판 포토 삭제
-	void deleteReviewPhotos(Long reviewId) throws Exception;
+	void deleteReviewPhotos(int reviewId) throws Exception;
 	
 }

@@ -34,7 +34,7 @@
 	<definition name="/review/edit" extends="baseLayout">
 	    <put-attribute name="title" value="𝐍𝐎𝐈𝐑 | review" />
 	    <put-attribute name="header" value="/WEB-INF/views/common/main_header.jsp" />
-	    <put-attribute name="body" value="/WEB-INF/views/review/reviewForm.jsp" />
+	    <put-attribute name="body" value="/WEB-INF/views/review/modify.jsp" />
 	</definition>
       
 </tiles-definitions>

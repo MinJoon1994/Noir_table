@@ -45,18 +45,8 @@ public class ReviewDAOImpl implements ReviewDAO {
 	}
 
 	@Override
-	public ReviewVO selectReviewById(Long reviewId) throws Exception {
+	public ReviewVO selectReviewById(int reviewId) throws Exception {
 		return sqlSession.selectOne("mapper.review.selectReviewById", reviewId);
-	}
-	//이전글
-	@Override
-	public ReviewVO selectPrevReview(Long reviewId) throws Exception {
-	    return sqlSession.selectOne("mapper.review.selectPrevReview", reviewId);
-	}
-	//다음글
-	@Override
-	public ReviewVO selectNextReview(Long reviewId) throws Exception {
-	    return sqlSession.selectOne("mapper.review.selectNextReview", reviewId);
 	}
 
 	@Override
@@ -70,7 +60,7 @@ public class ReviewDAOImpl implements ReviewDAO {
 	}
 
 	@Override
-	public void deleteReview(Long reviewId) throws Exception {
+	public void deleteReview(int reviewId) throws Exception {
 		sqlSession.delete("mapper.review.deleteReview", reviewId);
 	}
 
@@ -80,7 +70,7 @@ public class ReviewDAOImpl implements ReviewDAO {
 	}
 
 	@Override
-	public void insertReviewPhoto(Long reviewId, String photoUrl) throws Exception {
+	public void insertReviewPhoto(int reviewId, String photoUrl) throws Exception {
 		Map<String, Object> param = new HashMap<>();
 		param.put("reviewId", reviewId);
 		param.put("photoUrl", photoUrl);
@@ -88,7 +78,7 @@ public class ReviewDAOImpl implements ReviewDAO {
 	}
 
 	@Override
-	public void deleteReviewPhotos(Long reviewId) throws Exception {
+	public void deleteReviewPhotos(int reviewId) throws Exception {
 		sqlSession.delete("mapper.review.deleteReviewPhotos", reviewId);
 	}
 	
@@ -124,6 +114,19 @@ public class ReviewDAOImpl implements ReviewDAO {
 		}
 		
 		return list;
+	}
+
+	public ReviewCustomerVO getReserveByCustomId(int customer_id) {
+		
+		ReviewCustomerVO reserve = sqlSession.selectOne("mapper.review.getReserveByCustomId",customer_id);
+		
+		int reserve_id = reserve.getReserve_id();
+		
+		ReviewAdminVO adminVO = sqlSession.selectOne("mapper.review.findAdminReserveByreserveId",reserve_id);
+		
+		reserve.setReviewAdminVO(adminVO);
+				
+		return reserve;
 	}
 
 }	

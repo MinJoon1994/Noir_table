@@ -72,24 +72,22 @@ public class ReviewController {
 	// http://localhost:8090/noir/review/detail.do 
 	// 상세페이지 보기 성공
 	@RequestMapping(value="/detail.do")
-	public ModelAndView reviewDetail(HttpServletRequest request,
+	public ModelAndView reviewDetail(
+						@RequestParam("reviewId") int reviewId,
+						HttpServletRequest request,
 						HttpServletResponse response) throws Exception {
+		
+		//${contextPath}/review/detail.do?reviewId=${review.reviewId}
 		
 		ModelAndView mav = new ModelAndView();
 		String viewName = (String)request.getAttribute("viewName");
-		System.out.println("viewName :" + viewName); //   viewName :/review/detail
 		
-		Long reviewId = Long.parseLong(request.getParameter("reviewId"));
-		System.out.println("reviewId : " +reviewId) ;
-
 		ReviewVO review = reviewService.getReviewById(reviewId);
-		ReviewVO prevReview = reviewService.getPrevReview(reviewId);
-	    ReviewVO nextReview = reviewService.getNextReview(reviewId);
 	    
-	    
+		ReviewCustomerVO reserve = reviewService.getReserveByCustomId(review.getCustomer_id());
+		
 		mav.addObject("review", review);
-		mav.addObject("prevReview", prevReview);
-		mav.addObject("nextReview", nextReview);
+		mav.addObject("reserve",reserve);
 
 		mav.setViewName(viewName);
 
@@ -164,20 +162,22 @@ public class ReviewController {
 	// GET  http://localhost:8090/noir/review/edit.do
 	// 수정 폼
 	@RequestMapping(value="/edit.do", method=RequestMethod.GET)
-	public ModelAndView editReviewForm(HttpServletRequest request,
+	public ModelAndView editReviewForm(
+						@RequestParam("reviewId") int reviewId,
+						HttpServletRequest request,
 						HttpServletResponse response) throws Exception {
-		String viewName = (String)request.getAttribute("viewName");
-		System.out.println("viewName :" + viewName); 
 		
-		Long reviewId = Long.parseLong(request.getParameter("reviewId"));
+		ModelAndView mav = new ModelAndView();
+		String viewName = (String)request.getAttribute("viewName");
+		
 		ReviewVO review = reviewService.getReviewById(reviewId);
-
-		ModelAndView mav = new ModelAndView(viewName);
-
+	    
+		ReviewCustomerVO reserve = reviewService.getReserveByCustomId(review.getCustomer_id());
+		
 		mav.addObject("review", review);
-		mav.addObject("formTitle", "리뷰 수정");
-		mav.addObject("formAction", request.getContextPath() + "/review/edit.do");
-		mav.addObject("submitBtnText", "수정");
+		mav.addObject("reserve",reserve);
+
+		mav.setViewName(viewName);
 
 		return mav;
 	}
@@ -195,9 +195,11 @@ public class ReviewController {
 
 	// 리뷰게시판 상세페이지 및 이미지 폴더 같이 삭제 
 	@RequestMapping(value="/delete.do", method=RequestMethod.POST)
-	public ModelAndView deleteReview(HttpServletRequest request,
+	public ModelAndView deleteReview(
+						@RequestParam("reviewId") int reviewId,
+						HttpServletRequest request,
 						HttpServletResponse response) throws Exception {
-		Long reviewId = Long.parseLong(request.getParameter("reviewId"));
+
 		//String uploadDir = request.getServletPath().getRealPath("/resources/review");
 		String uploadDir = null;
 		reviewService.deleteReview(reviewId, uploadDir);

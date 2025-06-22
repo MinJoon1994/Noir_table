@@ -171,6 +171,46 @@
 </center>            
 
 <script>
+
+document.addEventListener("DOMContentLoaded", function () {
+    const stars = document.querySelectorAll(".star-rating .fa-star");
+    const ratingInput = document.getElementById("rating");
+
+    stars.forEach(star => {
+        star.addEventListener("mouseenter", () => {
+            const value = parseInt(star.dataset.value);
+            highlightStars(value);
+        });
+
+        star.addEventListener("mouseleave", () => {
+            resetStars();
+        });
+
+        star.addEventListener("click", () => {
+            const value = parseInt(star.dataset.value);
+            ratingInput.value = value;
+            selectStars(value);
+        });
+    });
+
+    function highlightStars(value) {
+        stars.forEach(star => {
+            const val = parseInt(star.dataset.value);
+            star.classList.toggle("hovered", val <= value);
+        });
+    }
+
+    function resetStars() {
+        stars.forEach(star => star.classList.remove("hovered"));
+    }
+
+    function selectStars(value) {
+        stars.forEach(star => {
+            const val = parseInt(star.dataset.value);
+            star.classList.toggle("selected", val <= value);
+        });
+    }
+});
 // 페이드 인 효과
 const observer = new IntersectionObserver(entries => {
   entries.forEach(entry => {
