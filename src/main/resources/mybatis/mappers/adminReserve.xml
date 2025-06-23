@@ -26,7 +26,7 @@
 	    WHERE RESERVE_ID = (
 	        SELECT RESERVE_ID
 	        FROM ADMIN_RESERVATION
-	        WHERE RESERVE_DATE = TO_DATE(#{date}, 'YYYY-MM-DD')
+	        WHERE TRUNC(RESERVE_DATE) = TO_DATE(#{date}, 'YYYY-MM-DD')
 	          AND TIME_SLOT = #{time}
 	          AND STATUS = 'ACTIVE'
 	    )

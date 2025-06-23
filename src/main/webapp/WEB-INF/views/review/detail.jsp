@@ -178,13 +178,21 @@
 	    </div>
 	</div>
 
-    <c:if test="${not empty review.photoUrls}">
-        <div class="review-photo">
-            <c:forEach var="photo" items="${fn:split(review.photoUrls, ',')}">
-                <img src="${contextPath}/upload/review/${photo}" alt="리뷰 사진" />
-            </c:forEach>
-        </div>
-    </c:if>
+	<c:choose>
+	    <c:when test="${fn:startsWith(review.photoUrls, '/resources/')}">
+	        <div class="review-photo">
+	            <img src="${contextPath}${review.photoUrls}" alt="리뷰 사진" />
+	        </div>
+	    </c:when>
+	
+	    <c:when test="${not empty review.photoUrls}">
+	        <div class="review-photo">
+	            <c:forEach var="photo" items="${fn:split(review.photoUrls, ',')}">
+	                <img src="${contextPath}/upload/review/${photo}" alt="리뷰 사진" />
+	            </c:forEach>
+	        </div>
+	    </c:when>
+	</c:choose>
 
     <div class="review-content">
         <label><strong>내용</strong></label>
