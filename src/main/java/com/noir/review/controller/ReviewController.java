@@ -211,18 +211,11 @@ public class ReviewController {
 	    // 📌 새 파일이 있다면 기존 사진 삭제 + 새로 저장
 	    if (photoFile != null && !photoFile.isEmpty()) {
 	    	
-	    	System.out.println(photoUrls);
-	    	
 	        // 1. 기존 이미지 삭제
 	    	if (photoUrls != null && !photoUrls.trim().isEmpty()) {
 	    	    File oldFile = new File(uploadDir, photoUrls.trim());
 	    	    if (oldFile.exists()) {
 	    	        boolean deleted = oldFile.delete();
-	    	        if (!deleted) {
-	    	            System.out.println("❌ 삭제 실패: " + photoUrls);
-	    	        } else {
-	    	            System.out.println("✅ 삭제 성공: " + photoUrls);
-	    	        }
 	    	    } else {
 	    	        System.out.println("⚠️ 파일 없음: " + photoUrls);
 	    	    }
@@ -272,11 +265,6 @@ public class ReviewController {
     	    File oldFile = new File(uploadDir, photoUrls.trim());
     	    if (oldFile.exists()) {
     	        boolean deleted = oldFile.delete();
-    	        if (!deleted) {
-    	            System.out.println("❌ 삭제 실패: " + photoUrls);
-    	        } else {
-    	            System.out.println("✅ 삭제 성공: " + photoUrls);
-    	        }
     	    } else {
     	        System.out.println("⚠️ 파일 없음: " + photoUrls);
     	    }

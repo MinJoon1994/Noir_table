@@ -2,6 +2,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <% request.setCharacterEncoding("UTF-8"); %>
 <c:set var="contextPath" value="${pageContext.request.contextPath}"/>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
 <!-- FontAwesome for stars -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
@@ -17,7 +18,7 @@
   opacity: 1;
   transform: translateY(0);
 }
-
+	
 /* 상단 아이콘 */
 .icon_box {
   display: flex;
@@ -120,13 +121,17 @@ button[type="submit"] {
 	    <label for="customer_id">리뷰 작성할 예약 선택</label><br>
 	    <select name="customer_id" id="customer_id" required>
 	        <option value="">예약을 선택하세요</option>
-	        <c:forEach var="reserve" items="${reserveList}">
-	          <c:if test="${reserve.status == 'ACTIVE'}">
-	            <option value="${reserve.customer_id}">
-	                ${reserve.reviewAdminVO.reserve_date} / ${reserve.reviewAdminVO.meal_time} (${reserve.reviewAdminVO.time_slot})
-	            </option>
-	           </c:if> 
-	        </c:forEach>
+			<c:set var="today" value="<%= new java.text.SimpleDateFormat(\"yyyy-MM-dd\").format(new java.util.Date()) %>" />
+			
+			<c:forEach var="reserve" items="${reserveList}">
+			  <c:if test="${reserve.status == 'ACTIVE'}">
+			    <c:if test="${reserve.reviewAdminVO.reserve_date <= today}">
+			      <option value="${reserve.customer_id}">
+			        ${reserve.reviewAdminVO.reserve_date} / ${reserve.reviewAdminVO.meal_time} (${reserve.reviewAdminVO.time_slot})
+			      </option>
+			    </c:if>
+			  </c:if>
+			</c:forEach>
 	    </select>
 	</div>
 

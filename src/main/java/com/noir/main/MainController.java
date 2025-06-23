@@ -78,16 +78,7 @@ public class MainController {
 	public ModelAndView reservationUser(HttpServletRequest request, HttpServletResponse response) throws Exception{
 		// 관리자가 등록한 모든 예약 정보
 		List<CustomerReserveFirstVO> customerReserveFirstVOs = adminReserveService.customerReserveFirst();
-		
-		for (CustomerReserveFirstVO vo : customerReserveFirstVOs) {
-		    System.out.println("예약번호: " + vo.getReserve_Id());
-		    System.out.println("식사시간: " + vo.getMeal_Time());
-		    System.out.println("예약날짜: " + vo.getReserve_Date());
-		    System.out.println("시간대: " + vo.getTime_Slot());
-		    System.out.println("생성일: " + vo.getCreated_At());
-		    System.out.println("----------------------------");
-		}
-		
+	
 		ModelAndView mav=new ModelAndView();
 		
 		String viewName=(String)request.getAttribute("viewName");

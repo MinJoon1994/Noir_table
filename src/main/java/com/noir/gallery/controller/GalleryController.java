@@ -85,7 +85,6 @@ public class GalleryController {
 
 	    int photoId = Integer.parseInt(body.get("photoId"));
 	    
-	    System.out.println("photoId: "+photoId);
 	    
 	    // 여기서 DB + 파일 삭제 처리하면 됨
 	    int deleted = galleryService.deleteByPhotoId(photoId); // 예시

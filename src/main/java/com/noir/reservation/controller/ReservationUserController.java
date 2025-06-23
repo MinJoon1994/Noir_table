@@ -44,13 +44,7 @@ public class ReservationUserController {
 	        ModelAndView mav = new ModelAndView(); // JSP: /WEB-INF/views/customer/customerReserveFirst.jsp
 	        
 	        List<RestaurantSeatVO> restaurantSeatVOs = adminReserveService.getAllSeats();
-	        for (RestaurantSeatVO seat : restaurantSeatVOs) {
-	            System.out.println("좌석 ID: " + seat.getSeat_Id());
-	            System.out.println("위치: " + seat.getLocation());
-	            System.out.println("인원수: " + seat.getHead_Count());
-	            System.out.println("층수: " + seat.getFloor());
-	            System.out.println("-------------------------");
-	        }
+
 	        // 전체 좌석 목록
 	        mav.addObject("seatList", restaurantSeatVOs);
 	        
@@ -86,14 +80,7 @@ public class ReservationUserController {
 			ModelAndView mav = new ModelAndView(); // JSP: /WEB-INF/views/customer/customerReserveSecond.jsp
 
 			List<RestaurantSeatVO> restaurantSeatVOs = adminReserveService.getAllSeats();
-	        for (RestaurantSeatVO seat : restaurantSeatVOs) {
-	            System.out.println("좌석 ID: " + seat.getSeat_Id());
-	            System.out.println("위치: " + seat.getLocation());
-	            System.out.println("인원수: " + seat.getHead_Count());
-	            System.out.println("층수: " + seat.getFloor());
-	            System.out.println("-------------------------");
-	            
-	        }
+
 	        mav.addObject("seatList", restaurantSeatVOs);
 
 	        List<Integer> reservedSeatsId = adminReserveService.getReservedSeats(reserveId); 
@@ -151,7 +138,6 @@ public class ReservationUserController {
 				session.setAttribute("seatId", seatId);
 				MemberVO member = (MemberVO) session.getAttribute("member");
 				Integer memberId = member.getId();
-				System.out.println("memberid : " + memberId);
 				
 				// 트랜잭션
 				adminReserveService.reserveAndPay(seatId, reserveId, totalPrice, memberId);
@@ -186,7 +172,6 @@ public class ReservationUserController {
 		    CustomerGetReserveInfoVO infoVo = adminReserveService.selectPayInfo(memberId, reserveId, seatId);
 		    
 		    ModelAndView mav = new ModelAndView();
-		    System.out.println("infovo : " + infoVo);
 		    
 		    mav.addObject("info", infoVo);
 		    

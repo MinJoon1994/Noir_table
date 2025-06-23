@@ -171,13 +171,8 @@ public class MemberController {
 
 		session.setAttribute("member", member);
 
-
-		System.out.println(member.getId());
-
 		MemberVO members = (MemberVO) session.getAttribute("member");
 		Integer memberId = members.getId();
-		System.out.println("로그인한 member 객체 : " + members);
-		System.out.println("로그인한 memberid : " + memberId);
 		
 		mav.setViewName("redirect:/main.do");
 		
@@ -532,14 +527,6 @@ public class MemberController {
 	        // DB에는 파일 이름만 저장 (경로는 저장 안 함)
 	        member.setProfileImage(savedName);
 	    }
-	    
-	    System.out.println(member.getId());
-	    System.out.println(member.getLogin_id());
-	    System.out.println(member.getName());
-	    System.out.println(member.getPassword());
-	    System.out.println(member.getPhone());
-	    System.out.println(member.getProfileImage());
-	    System.out.println(member.getSocial_type());
 	    
 	    // TODO: 서비스 호출해서 DB 업데이트
 	    memberService.updateMember(member);

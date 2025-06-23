@@ -96,7 +96,7 @@
 <div class="icon_box fade-up" style="margin-top:30px; margin-bottom:20px;">
   <img src="${contextPath}/resources/image/noir_icon.png"/>
 </div>
-<h2 class="fade-up" style="text-align: center;">내 리뷰 목록</h2>
+<h2 class="fade-up" style="text-align: center;">리뷰 목록</h2>
 <table class="review-table fade-up">
     <colgroup>
         <col style="width: 10%;">   <!-- 번호 -->

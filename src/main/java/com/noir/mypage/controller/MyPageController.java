@@ -163,11 +163,7 @@ public class MyPageController {
 	    long unreadCount = notificationVOs.stream()
 	        .filter(n -> n.getIsRead() == 0)
 	        .count();
-	    for (NotificationVO n : notificationVOs) {
-	        System.out.println("→ 알림 ID: " + n.getNotificationId() + ", isRead: " + n.getIsRead());
-	    }
-	    System.out.println("unreadCount는 : " + unreadCount);
-	    
+
 	    Map<String, Integer> result = new HashMap<>();
 	    result.put("unreadCount", (int) unreadCount);
 	    return result;
@@ -181,9 +177,7 @@ public class MyPageController {
 		Integer memberId = member.getId();
 	    
 	    List<NotificationVO> all = myPageService.getNotification(memberId);
-	    for (NotificationVO n2 : all) {
-	    	System.out.println("→ 모달용 알림 ID: " + n2.getNotificationId() + ", isRead: " + n2.getIsRead());
-	    }
+
 	    return all.stream()
 	              .filter(n -> n.getIsRead() == 0)
 	              .collect(Collectors.toList());
