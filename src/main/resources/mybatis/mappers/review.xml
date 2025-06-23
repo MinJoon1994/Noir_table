@@ -110,14 +110,32 @@
 
 	<!-- 리뷰 등록 (리뷰ID 반환) -->
 	<insert id="insertReview" parameterType="com.noir.review.vo.ReviewVO">
-		INSERT INTO noir_review (review_id, title, content, rating, photo_url,customer_id)
-		VALUES (seq_noir_review_id.NEXTVAL, #{title}, #{content}, #{rating}, #{photoUrls}, #{customer_id})
+	  INSERT INTO noir_review (
+	    review_id,
+	    title,
+	    content,
+	    rating,
+	    customer_id
+	    <if test="photoUrls != null and photoUrls != ''">
+	      , photo_url
+	    </if>
+	  )
+	  VALUES (
+	    seq_noir_review_id.NEXTVAL,
+	    #{title},
+	    #{content},
+	    #{rating},
+	    #{customer_id}
+	    <if test="photoUrls != null and photoUrls != ''">
+	      , #{photoUrls}
+	    </if>
+	  )
 	</insert>
 
 	<!-- 리뷰 수정 -->
 	<update id="updateReview" parameterType="com.noir.review.vo.ReviewVO">
 		UPDATE noir_review
-		SET title=#{title}, content=#{content}, rating=#{rating}
+		SET title=#{title}, content=#{content}, rating=#{rating}, photo_url=#{photoUrls}
 		WHERE review_id=#{reviewId}
 	</update>
 
@@ -152,5 +170,38 @@
 	
 	<select id="findAdminReserveByreserveId" parameterType="int" resultMap="reviewAdminMap">
 		select * from admin_reservation where reserve_id = #{reserve_id}
+	</select>
+	
+	<select id="myCustomerList" parameterType="int" resultType="int">
+		select customer_id customer_reservation where member_id = #{member_id}
+	</select>
+	
+	<select id="myReviewList" parameterType="int" resultMap="reviewMap">
+		select * from noir_review where customer_id = #{customer_id}
+	</select>
+	
+	<select id="getPagedReviewListByMember" parameterType="map" resultMap="reviewMap">
+	  SELECT * FROM (
+	    SELECT inner_query.*, ROWNUM rn
+	    FROM (
+	      SELECT r.review_id, r.title, r.content, r.rating, r.customer_id,
+	             cr.reserve_id, cr.status, cr.seat_id, cr.member_id
+	      FROM noir_review r
+	      JOIN customer_reservation cr
+	        ON r.customer_id = cr.customer_id
+	      WHERE cr.member_id = #{memberId}
+	      ORDER BY r.review_id DESC
+	    ) inner_query
+	    WHERE ROWNUM &lt;= #{offset} + #{pageSize}
+	  )
+	  WHERE rn &gt; #{offset}
+	</select>
+	
+	<select id="getMyReviewCount" parameterType="int" resultType="int">
+		SELECT COUNT(*)
+		FROM noir_review r
+		JOIN customer_reservation cr
+		  ON r.customer_id = cr.customer_id
+		WHERE cr.member_id = #{memberId}
 	</select>
 </mapper>

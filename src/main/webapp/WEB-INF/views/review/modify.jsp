@@ -228,8 +228,9 @@
         </div>
 
         <div style="margin-top: 20px;">
-	        <label><strong>사진 변경 (여러 개 선택 가능):</strong></label><br>
+	        <label><strong>사진 변경 :</strong></label><br>
 	        <input type="file" name="photoFiles" id="photoFiles" multiple accept="image/*" />
+	        <input type="hidden" name="photoUrls" value="${review.photoUrls}"/>
         </div>
 
         <div class="review-buttons">

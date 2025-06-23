@@ -21,7 +21,6 @@
 		width: 1580px;
 		height: 620px;
 		display: flex;
-    		
 	}
 	.result-left {
 		flex: 1;

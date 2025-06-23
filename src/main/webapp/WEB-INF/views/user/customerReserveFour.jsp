@@ -8,98 +8,127 @@
 <meta charset="UTF-8">
 <title>결제정보</title>
 <style>
-  .main-container {
-    width: 1017px;
-    display: flex;
-    margin: 10px auto 20px;
-  }
-  .side-container {
-  	margin-top: 5px;
-  	width: 130px;
-  }
-  .step-menu { background-color: #e60113; color: white; flex: 1; display: flex; flex-direction: column; }
-  .step-menu div { padding: 79.4px 17px; cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.2); }
-  .step-menu div.active { background-color: #a00010; }
-  .container {
-    width: 887px;
-    display: flex;
-    flex-direction: column;
-    margin: 5px auto 0;
-    border: 1px solid black;
-    background-color: #fff;
-    font-family: Arial, sans-serif;
-  }
+ body {
+  font-family: 'Noto Sans KR', sans-serif;
+  margin: 0;
+  background-color: #fff;
+  color: #111;
+}
 
-  .header {
-    width: 827px;
-    padding: 30px;
-    font-size: 30px;
-    color: #1a4f7a;
-    text-align: left;
-    border-bottom: 2px solid #3180c3;
-    margin: 0 auto;
-  }
+.main-container {
+  width: 1017px;
+  display: flex;
+  margin: 10px auto 20px;
+}
 
-  .content {
-    display: flex;
-    margin-top: 40px;
-    padding: 30px 40px;
-    flex: 1;
-  }
+.side-container {
+  margin-top: 5px;
+  width: 130px;
+}
 
-  .info-box {
-    flex: 1;
-    margin-right: 20px;
-  }
+.step-menu {
+  background-color: #111;
+  color: white;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+.step-menu div {
+  padding: 79.4px 17px;
+  cursor: pointer;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+.step-menu div.active {
+  background-color: #333;
+}
 
-  .info-title {
-    font-size: 20px;
-    color: #333;
-    border-bottom: 2px solid #ccc;
-    margin-bottom: 15px;
-    padding-bottom: 5px;
-  }
+.container {
+  width: 887px;
+  display: flex;
+  flex-direction: column;
+  margin: 5px auto 0;
+  border: 1px solid #ccc;
+  background-color: #fff;
+}
 
-  .info-list {
-    font-size: 16px;
-    line-height: 1.8;
-    color: #444;
-    padding-left: 10px;
-  }
+.header {
+  width: 827px;
+  padding: 30px;
+  font-size: 30px;
+  color: #000;
+  text-align: left;
+  border-bottom: 2px solid #111;
+  margin: 0 auto;
+  font-weight: bold;
+}
 
-  .summary-box {
-    flex: 1;
-    padding-left: 30px;
-    border-left: 1px solid #ddd;
-  }
+.content {
+  display: flex;
+  margin-top: 40px;
+  padding: 30px 40px;
+  flex: 1;
+}
 
-  .summary-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-bottom: 20px;
-    font-size: 15px;
-  }
+.info-box {
+  flex: 1;
+  margin-right: 20px;
+}
 
-  .summary-table th,
-  .summary-table td {
-    padding: 10px;
-    border: 1px solid #ccc;
-    text-align: center;
-  }
+.info-title {
+  font-size: 20px;
+  color: #000;
+  border-bottom: 2px solid #ccc;
+  margin-bottom: 15px;
+  padding-bottom: 5px;
+  font-weight: bold;
+}
 
-  .total-price {
-    font-size: 18px;
-    text-align: right;
-    margin-top: 10px;
-    font-weight: bold;
-    color: #d60000;
-  }
+.info-list {
+  font-size: 16px;
+  line-height: 1.8;
+  color: #333;
+  padding-left: 10px;
+}
 
-  .highlight {
-    color: #00509e;
-    font-weight: bold;
-  }
+.summary-box {
+  flex: 1;
+  padding-left: 30px;
+  border-left: 1px solid #ddd;
+}
 
+.summary-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+  font-size: 15px;
+}
+
+.summary-table th {
+  background-color: #f3f3f3;
+  color: #000;
+  padding: 12px;
+  border-bottom: 1px solid #ccc;
+}
+
+.summary-table td {
+  padding: 12px;
+  border-bottom: 1px solid #eee;
+  text-align: center;
+  color: #222;
+}
+
+.total-price {
+  font-size: 18px;
+  text-align: right;
+  margin-top: 10px;
+  font-weight: bold;
+  color: #111;
+}
+
+.highlight {
+  color: #000;
+  font-weight: bold;
+}
 </style>
 </head>
 <body>

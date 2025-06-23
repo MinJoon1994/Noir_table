@@ -14,57 +14,175 @@
   <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
   <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/ko.js"></script>
   <style>
-	  .container {
-	    width: 1017px;
-	    height: 745px;
-	    display: flex;
-	    margin: 10px auto 20px;
-	  }
-    .step-menu { height:736px; background-color: #e60113; color: white; flex: 1; display: flex; flex-direction: column; }
-    .step-menu div { padding: 79.4px 17px; cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.2); }
-    .step-menu div.active { background-color: #a00010; }
-    .main-container { width: 887px; display: flex; flex-direction: column; background-color: #f9f9f9; border: 1px solid black;}
-    .top-row { display: flex; justify-content: space-between; }
-    .area-select { height: 260px; display: flex; gap: 20px; background: white; border-right: 1px solid #ccc; flex: 6; padding: 10px; }
-    .floor, .location { flex: 1; }
-    .headCount-select { background: white; border-right: 1px solid #ccc; flex: 6; padding: 10px; }
-    .schedule-block { height: 310px; padding: 20px; }
-    .floor-option, .location-option, .headCount-option, .time-slot {
-      padding: 8px; margin: 5px 0; cursor: pointer; border-radius: 5px;
-    }
-    .floor-option:hover, .location-option:hover, .headCount-option:hover, .time-slot:hover {
-      background-color: #eee;
-    }
-    .selected { background-color: black; color: white !important; }
-    .next-btn {
-      margin-top: 30px; padding: 12px 20px; font-size: 16px;
-      background-color: #e60113; color: white; border: none; border-radius: 5px;
-      cursor: not-allowed; opacity: 0.6;
-    }
-    .date-label {
-      margin-bottom : 20px;
-    }
-    .time-container {
-      height: 200px;
-    }
-    .time-list {
-	  display: flex;
-	  flex-wrap: wrap;
-	  gap: 10px;
-	}
-	
-	.time-slot {
-	  flex: 0 0 25%;
-	  padding: 12px;
-	  margin-bottom: 10px;
-	  border: 1px solid #ccc;
-	  text-align: center;
-	  border-radius: 5px;
-	  cursor: pointer;
-	  background-color: white;
-	}
-	.next-btn {padding: 10px 60px;}
-    .next-btn.enabled { cursor: pointer; opacity: 1; }
+body {
+  font-family: 'Noto Sans KR', sans-serif;
+  margin: 0;
+  background-color: #ffffff;
+  color: #111;
+}
+
+.container {
+  width: 1017px;
+  height: 745px;
+  display: flex;
+  margin: 10px auto 20px;
+}
+
+/* 왼쪽 단계 메뉴 */
+.step-menu {
+  height: 736px;
+  background-color: #111;
+  color: white;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+.step-menu div {
+  padding: 79.4px 17px;
+  cursor: pointer;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+.step-menu div.active {
+  background-color: #333;
+}
+
+/* 오른쪽 메인 */
+.main-container {
+  width: 887px;
+  display: flex;
+  flex-direction: column;
+  background-color: #fff;
+  border: 1px solid #ccc;
+}
+
+.main-container > div:first-child {
+  width: 827px;
+  padding: 30px;
+  font-size: 30px;
+  color: #000;
+  text-align: left;
+  background-color: #fff;
+  border-bottom: 2px solid #111;
+  font-weight: bold;
+}
+
+.top-row {
+  display: flex;
+  justify-content: space-between;
+}
+
+/* 구역 선택 영역 */
+.area-select {
+  height: 260px;
+  display: flex;
+  gap: 20px;
+  background: #fff;
+  border-right: 1px solid #ccc;
+  flex: 6;
+  padding: 10px;
+}
+
+.floor, .location {
+  flex: 1;
+}
+
+.headCount-select {
+  background: #fff;
+  border-right: 1px solid #ccc;
+  flex: 6;
+  padding: 10px;
+}
+
+h4 {
+  font-size: 1rem;
+  color: #000;
+  margin-bottom: 10px;
+}
+
+/* 선택 항목 스타일 */
+.floor-option,
+.location-option,
+.headCount-option,
+.time-slot {
+  padding: 10px;
+  margin: 6px 0;
+  cursor: pointer;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  background-color: #fafafa;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.floor-option:hover,
+.location-option:hover,
+.headCount-option:hover,
+.time-slot:hover {
+  background-color: #eee;
+}
+
+.selected {
+  background-color: #111 !important;
+  color: white !important;
+  border-color: #111 !important;
+}
+
+/* 스케줄 영역 */
+.schedule-block {
+  height: 310px;
+  padding: 20px;
+}
+
+.date-label {
+  margin-bottom: 20px;
+}
+
+input[type="text"] {
+  padding: 8px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  width: 180px;
+}
+
+/* 시간 목록 */
+.time-container {
+  height: 200px;
+}
+
+.time-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.time-slot {
+  flex: 0 0 25%;
+  padding: 12px;
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+/* 버튼 */
+.next-btn {
+  margin-top: 30px;
+  padding: 12px 60px;
+  font-size: 16px;
+  background-color: #111;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: not-allowed;
+  opacity: 0.6;
+  transition: opacity 0.2s ease, background-color 0.2s ease;
+}
+
+.next-btn.enabled {
+  cursor: pointer;
+  opacity: 1;
+}
+
+.next-btn:hover:enabled {
+  background-color: #000;
+}
   </style>
 </head>
 <body>

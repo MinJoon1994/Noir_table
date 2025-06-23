@@ -5,7 +5,7 @@ import java.util.List;
 
 public class ReviewVO {
 
-	private Long reviewId;
+	private int reviewId;
 	private String title;
 	private String content;
 	private int rating;
@@ -26,10 +26,10 @@ public class ReviewVO {
 	public void setCustomer_id(int customer_id) {
 		this.customer_id = customer_id;
 	}
-	public Long getReviewId() {
+	public int getReviewId() {
 		return reviewId;
 	}
-	public void setReviewId(Long reviewId) {
+	public void setReviewId(int reviewId) {
 		this.reviewId = reviewId;
 	}
 	public String getTitle() {

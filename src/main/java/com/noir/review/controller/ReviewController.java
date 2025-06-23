@@ -1,11 +1,13 @@
 package com.noir.review.controller;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -17,6 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.noir.member.vo.MemberVO;
 import com.noir.review.service.ReviewServiceImpl;
 import com.noir.review.vo.ReviewCustomerVO;
 import com.noir.review.vo.ReviewVO;
@@ -27,8 +30,7 @@ public class ReviewController {
 
 	@Autowired
 	private ReviewServiceImpl reviewService;
-	
-	
+		
 	//http://localhost:8090/noir/review.do
 	//리뷰게시판 리스트 성공
 	@RequestMapping(value="/list.do")
@@ -128,28 +130,31 @@ public class ReviewController {
 		
 		ModelAndView mav = new ModelAndView();
 		
-		//업로드 폴더 경로 설정
-		String uploadDir = "C:/upload/noir/review/";
-		File dir = new File(uploadDir);
-		if(!dir.exists()) dir.mkdirs();//경로 없으면 생성
-		
-		//실제 파일 이름과 저장용 UUID 이름 만들기
-		String originalFileName = photoFile.getOriginalFilename();
-		String uuid = UUID.randomUUID().toString();
-		String saveName = uuid+"_"+originalFileName;
-		
-		//저장
-		File saveFile = new File(uploadDir + saveName);
-		photoFile.transferTo(saveFile);
-		
 		ReviewVO review = new ReviewVO();
 		
 		review.setContent(content);
 		review.setCustomer_id(customerId);
-		review.setPhotoUrls(saveName);
+
 		review.setTitle(title);
 		review.setRating(rating);
 		
+		if(photoFile != null && !photoFile.isEmpty()) {
+			//업로드 폴더 경로 설정
+			String uploadDir = "C:/upload/noir/review/";
+			File dir = new File(uploadDir);
+			if(!dir.exists()) dir.mkdirs();//경로 없으면 생성
+			
+			//실제 파일 이름과 저장용 UUID 이름 만들기
+			String originalFileName = photoFile.getOriginalFilename();
+			String uuid = UUID.randomUUID().toString();
+			String saveName = uuid+"_"+originalFileName;
+			
+			//저장
+			File saveFile = new File(uploadDir + saveName);
+			photoFile.transferTo(saveFile);
+			review.setPhotoUrls(saveName);
+		}
+
 		reviewService.addReviewWithImages(review);
 		
 		mav.setViewName("redirect:/review/list.do");
@@ -184,27 +189,158 @@ public class ReviewController {
 
 	// POST  http://localhost:8090/noir/review/edit.do
 	// 수정 처리
-	@RequestMapping(value="/edit.do", method=RequestMethod.POST)
-	public ModelAndView editReview(MultipartHttpServletRequest request, ReviewVO review) throws Exception {
-		List<MultipartFile> files = request.getFiles("images");
-		//String uploadDir = request.getServletPath().getRealPath("/resources/review");
-		String uploadDir = null;
-		reviewService.updateReviewWithImages(review, files, uploadDir);
-		return new ModelAndView("redirect:/review/detail.do?reviewId=" + review.getReviewId());
+	@RequestMapping(value="/update.do", method=RequestMethod.POST)
+	public ModelAndView editReview( 
+									@RequestParam("reviewId") int reviewId,
+									@RequestParam("title") String title,
+									@RequestParam("content") String content,
+									@RequestParam("rating") int rating,
+									@RequestParam("photoUrls") String photoUrls,
+									@RequestParam("photoFiles") MultipartFile photoFile,
+									HttpServletRequest request,
+									HttpServletResponse response) throws Exception {
+		
+		ReviewVO review = new ReviewVO();
+	    review.setReviewId(reviewId);
+	    review.setTitle(title);
+	    review.setRating(rating);
+	    review.setContent(content);
+
+	    String uploadDir = "C:/upload/noir/review/";
+
+	    // 📌 새 파일이 있다면 기존 사진 삭제 + 새로 저장
+	    if (photoFile != null && !photoFile.isEmpty()) {
+	    	
+	    	System.out.println(photoUrls);
+	    	
+	        // 1. 기존 이미지 삭제
+	    	if (photoUrls != null && !photoUrls.trim().isEmpty()) {
+	    	    File oldFile = new File(uploadDir, photoUrls.trim());
+	    	    if (oldFile.exists()) {
+	    	        boolean deleted = oldFile.delete();
+	    	        if (!deleted) {
+	    	            System.out.println("❌ 삭제 실패: " + photoUrls);
+	    	        } else {
+	    	            System.out.println("✅ 삭제 성공: " + photoUrls);
+	    	        }
+	    	    } else {
+	    	        System.out.println("⚠️ 파일 없음: " + photoUrls);
+	    	    }
+	    	}
+
+	        // 2. 새 파일 저장
+	        String originalFilename = photoFile.getOriginalFilename();
+	        String newFilename = UUID.randomUUID() + "_" + originalFilename;
+	        File saveFile = new File(uploadDir, newFilename);
+	        try {
+	            photoFile.transferTo(saveFile);
+	            review.setPhotoUrls(newFilename); // 하나만 저장
+	        } catch (IOException e) {
+	            e.printStackTrace();
+	        }
+
+	    } else {
+	        // 새 파일 없으면 기존 이미지 유지
+	        review.setPhotoUrls(photoUrls);
+	    }
+
+	    // 3. DB 반영
+	    reviewService.updateReviewWithImages(review);
+		
+
+		ModelAndView mav = new ModelAndView();
+		
+		mav.setViewName("redirect:/review/edit.do?reviewId="+reviewId);
+		
+	
+		return mav;
+		
 	}
 
 	// 리뷰게시판 상세페이지 및 이미지 폴더 같이 삭제 
 	@RequestMapping(value="/delete.do", method=RequestMethod.POST)
 	public ModelAndView deleteReview(
 						@RequestParam("reviewId") int reviewId,
+						@RequestParam("photoUrls") String photoUrls,
 						HttpServletRequest request,
 						HttpServletResponse response) throws Exception {
+		
+	    String uploadDir = "C:/upload/noir/review/";
+		
+        // 1. 기존 이미지 삭제
+    	if (photoUrls != null && !photoUrls.trim().isEmpty()) {
+    	    File oldFile = new File(uploadDir, photoUrls.trim());
+    	    if (oldFile.exists()) {
+    	        boolean deleted = oldFile.delete();
+    	        if (!deleted) {
+    	            System.out.println("❌ 삭제 실패: " + photoUrls);
+    	        } else {
+    	            System.out.println("✅ 삭제 성공: " + photoUrls);
+    	        }
+    	    } else {
+    	        System.out.println("⚠️ 파일 없음: " + photoUrls);
+    	    }
+    	}
 
-		//String uploadDir = request.getServletPath().getRealPath("/resources/review");
-		String uploadDir = null;
 		reviewService.deleteReview(reviewId, uploadDir);
-		System.out.println("reviewId :" + reviewId);
-		return new ModelAndView("redirect:/review.do");
+
+		return new ModelAndView("redirect:/review/list.do");
+	}
+	
+	@RequestMapping(value="/myreview.do")
+	public ModelAndView myReview(
+			HttpServletRequest req,
+			HttpServletResponse resp) throws Exception {
+		
+		ModelAndView mav = new ModelAndView();
+		
+		int page = 1;
+		int pageSize = 10;
+		if (req.getParameter("page") != null) {
+			page = Integer.parseInt(req.getParameter("page"));
+		}
+		int offset = (page - 1) * pageSize;
+		
+		List<ReviewVO> myReviewList = reviewService.myReviewList(req,offset,pageSize);
+		List<ReviewCustomerVO> reserveList= reviewService.getCustomerReservation2(req);
+		
+		int totalCount = reviewService.getMyReviewCount(req);
+		int totalPage = (int)Math.ceil((double)totalCount / pageSize);
+
+		int blockSize = 10;
+		int startBlock = ((page - 1) / blockSize) * blockSize + 1;
+		int endBlock = Math.min(startBlock + blockSize - 1, totalPage);
+		
+		mav.addObject("currentPage", page);
+		mav.addObject("totalPage", totalPage);
+		mav.addObject("startBlock", startBlock);
+		mav.addObject("endBlock", endBlock);
+		mav.addObject("currentPage", page);
+
+		mav.addObject("reviewList", myReviewList);
+		mav.addObject("reserveList", reserveList);
+		
+		String viewName = (String)req.getAttribute("viewName");
+
+		mav.setViewName(viewName);
+		
+		return mav;
+		
 	}
 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

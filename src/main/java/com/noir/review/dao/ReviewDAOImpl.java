@@ -3,10 +3,14 @@ package com.noir.review.dao;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.ibatis.session.SqlSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import com.noir.member.vo.MemberVO;
 import com.noir.review.vo.ReviewAdminVO;
 import com.noir.review.vo.ReviewCustomerVO;
 import com.noir.review.vo.ReviewVO;
@@ -127,6 +131,45 @@ public class ReviewDAOImpl implements ReviewDAO {
 		reserve.setReviewAdminVO(adminVO);
 				
 		return reserve;
+	}
+
+	public List<Integer> myCustomerList(int member_id) {
+		
+		return sqlSession.selectList("mapper.review.myCustomerList",member_id);
+	}
+
+
+	public List<ReviewVO> myReviewList(int member_id, int offset, int pageSize) {
+		
+		Map<String, Integer> paramMap = new HashMap<>();
+		
+		paramMap.put("memberId", member_id);
+		paramMap.put("offset", offset);
+		paramMap.put("pageSize", pageSize);
+		
+		List<ReviewVO> list = sqlSession.selectList("mapper.review.getPagedReviewListByMember",paramMap);
+		
+	    for(ReviewVO review : list) {
+	    	
+	    	int customer_id = review.getCustomer_id();
+	    	
+	    	int memberid = sqlSession.selectOne("mapper.member.findMeberIdByCustomerId",customer_id);
+	    	
+	    	String userName = sqlSession.selectOne("mapper.member.findNameByMemberId",memberid);
+	    	
+	    	review.setUserName(userName);
+	    }
+		
+		return list;
+	}
+
+	public int getMyReviewCount(HttpServletRequest req) {
+		
+		MemberVO member = (MemberVO)req.getSession().getAttribute("member");
+		
+		int memberId = member.getId();
+		
+		return sqlSession.selectOne("mapper.review.getMyReviewCount",memberId);
 	}
 
 }	

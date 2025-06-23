@@ -1,5 +1,6 @@
 package com.noir.review.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -47,35 +48,20 @@ public class ReviewServiceImpl implements ReviewService {
 		
 		reviewDAO.insertReview(review);
 	}
-
+	
+	//
 	@Override
-	public void updateReviewWithImages(ReviewVO review, List<MultipartFile> images, String uploadDir) throws Exception {
-		
+	public void updateReviewWithImages(ReviewVO review) throws Exception {
+		reviewDAO.updateReview(review);
 	}
 
 	//리뷰게시판 삭제하기
 	@Override
 	public void deleteReview(int reviewId, String uploadDir) throws Exception {
-		reviewDAO.deleteReviewPhotos(reviewId);
+		
 		reviewDAO.deleteReview(reviewId);
-		// 폴더 삭제
-		String reviewFolderPath = uploadDir + File.separator + reviewId;
-		File dir = new File(reviewFolderPath);
-		if (dir.exists()) {
-			for (File file : dir.listFiles()) file.delete();
-			dir.delete();
-		}
 	}
 
-	private String getExtension(String filename) {
-		int dot = filename.lastIndexOf('.');
-		return dot == -1 ? "" : filename.substring(dot + 1).toLowerCase();
-	}
-
-	private boolean isImageExt(String ext) {
-		return ext.equals("jpg") || ext.equals("jpeg") || ext.equals("png") || ext.equals("gif");
-	}
-	
 	
 	//고객 리뷰 남길수 있는 목록 불러오기
 	public List<ReviewCustomerVO> getCustomerReservation(HttpServletRequest request) {
@@ -107,4 +93,25 @@ public class ReviewServiceImpl implements ReviewService {
 		
 		return reviewDAO.getReserveByCustomId(customer_id);
 	}
+
+	public List<ReviewVO> myReviewList(HttpServletRequest req,int offset,int pageSize) {
+		
+		HttpSession session = req.getSession();
+		
+		MemberVO member = (MemberVO) session.getAttribute("member");
+		
+		int member_id = member.getId();
+		
+		List<ReviewVO> myReviewList = reviewDAO.myReviewList(member_id,offset,pageSize);
+		
+		
+		
+		return myReviewList;
+	}
+
+	public int getMyReviewCount(HttpServletRequest req) {
+		
+		return reviewDAO.getMyReviewCount(req);
+	}
+
 }

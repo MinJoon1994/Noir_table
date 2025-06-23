@@ -10,7 +10,7 @@
 <script type="text/javascript">
 
 </script>
-
+<c:if test="${not empty sessionScope.member}">
 <script>
 	document.addEventListener("DOMContentLoaded", () => {
 	  // 알림 수 표시
@@ -66,7 +66,7 @@
 	  }
 	});
 </script>
-
+</c:if>
 <style>
     header {
         background-color: white;

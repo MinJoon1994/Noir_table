@@ -27,138 +27,146 @@
 <title>Insert title here</title>
 </head>
 <style>
-    .main-container {
-      width: 1017px;
-      display: flex;
-      margin: 10px auto 20px;
-    }
-    .side-container {
-  	  margin-top: 5px;
-  	  width: 130px;
-    }
-    .step-menu { background-color: #e60113; color: white; flex: 1; display: flex; flex-direction: column; }
-    .step-menu div { padding: 79.4px 17px; cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.2); }
-    .step-menu div.active { background-color: #a00010; }
-    .container {
-      width: 887px;
-      display: flex;
-      flex-direction: column;
-      margin: 5px auto 0;
-      border: 1px solid black;
-    }
-    .main-reservation {
-    	margin-top: 40px;
-    	display: flex;
-    }
-    .left-main{
-    	flex: 1;
-    }
-    .right-main{
-    	flex: 1;
-    }
-    /* 예약 박스  */
-	.reservation-box {
-	    width: 300px;
-	    border: 3px solid #ccc;
-	    border-radius: 12px;
-	    padding: 16px 20px;
-	    margin: 30px;
-	    box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1);
-	    font-family: 'Arial', sans-serif;
-	}
-	
-	.reservation-box table {
-	    border-collapse: collapse;
-	}
-	
-	.reservation-box td {
-	    padding: 6px 10px;
-	    vertical-align: top;
-	    font-size: 17px;
-	    color: #333;
-	}
-	
-	.reservation-box .title {
-	    font-weight: bold;
-	    font-size: 24px;
-	    padding-bottom: 10px;
-	}
-	.label {
-	    color: #999;
-	    width: 50px;
-	}
-	/* right-main */
-	
-	/* 상단 제목 */
-	.order-title {
-		font-weight: normal;
-		margin-left: 40px;
-	    color: #d60000;
-	    font-size: 28px;
-	    margin-bottom: 23px;
-	}
-	.table-outbox {
-		width: 400px;
-		height: 250px;
-		border: 1px solid #d3d3d3;
-	}
-	/* 테이블 전체 */
-	.order-table {
-	    width: 400px;
-	    margin: 0;
-	    border-collapse: collapse;
-	    font-size: 13px;
-	    background-color: white;
-	}
-	.order-table td,
-	.order-table th {
-	    text-align: center;
-	    vertical-align: middle;
-	}
-	/* 테이블 헤더 */
-	.table-header {
-	    background-color: #f0f0f0;
-	    border: 1px solid #ccc;
-	    padding: 12px;
-	}
-	
-	/* 테이블 셀 */
-	.product-name,
-	.product-quantity,
-	.product-price {
-	    border: 1px solid #ccc;
-	    padding: 12px;
-	}
-	
-	/* 요약 영역 */
-	.order-summary {
-		width: 380px;
-		height: 30px;
-	    display: flex;
-	    padding: 10px;
-	    justify-content: center;
-	    margin-top: 30px;
-	    font-size: 16px;
-	    background-color: #ffeef2;
-	}
-	
-	.total-quantity,
-	.total-price {
-	    margin: 0 30px;
-	}
-	
-	/* 강조 색상 */
-	.highlight {
-	    color: red;
-	}
-	.pay-btn {
-		margin-top: 35px;
-		width: 250px;
-		padding : 20px;
-	    background-color: #ff4d4d; 
-	    color: white;              
-	}
+body {
+  font-family: 'Noto Sans KR', sans-serif;
+  margin: 0;
+  background-color: #fff;
+  color: #111;
+}
+
+.main-container {
+  width: 1017px;
+  display: flex;
+  margin: 10px auto 20px;
+}
+
+.side-container {
+  margin-top: 5px;
+  width: 130px;
+}
+
+.step-menu {
+  background-color: #111;
+  color: white;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+.step-menu div {
+  padding: 79.4px 17px;
+  cursor: pointer;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  font-size: 14px;
+  text-align: center;
+}
+.step-menu div.active {
+  background-color: #333;
+  font-weight: bold;
+}
+
+.container {
+  width: 887px;
+  display: flex;
+  flex-direction: column;
+  margin: 5px auto 0;
+  border: 1px solid #ccc;
+  background-color: #fff;
+}
+
+.container > div:first-child {
+  width: 827px;
+  padding: 30px;
+  font-size: 30px;
+  color: #000;
+  text-align: left;
+  background-color: #fff;
+  border-bottom: 2px solid #111;
+  font-weight: bold;
+}
+
+.main-reservation {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 30px;
+  padding: 24px;
+}
+
+.left-main, .right-main {
+  flex: 1 1 400px;
+  box-sizing: border-box;
+}
+
+.reservation-box {
+  background-color: #f3f3f3;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom:20px;
+}
+
+.reservation-box .title {
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 12px;
+  color: #000;
+  text-align: center;
+}
+
+.order-title {
+  font-size: 20px;
+  margin-bottom: 16px;
+  color: #000;
+  font-weight: bold;
+}
+
+.order-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.order-table th, .order-table td {
+  padding: 12px;
+  border: 1px solid #ccc;
+  text-align: center;
+  font-size: 14px;
+}
+.order-table th {
+  background-color: #eee;
+}
+
+.order-summary {
+  margin-top: 20px;
+  background-color: #f9f9f9;
+  border: 1px solid #ddd;
+  padding: 15px;
+  display: flex;
+  justify-content: space-between;
+  font-size: 15px;
+  color: #111;
+}
+
+.highlight {
+  color: #c00;
+  font-weight: bold;
+}
+
+.pay-btn {
+  margin: 30px auto;
+  display: block;
+  width: 240px;
+  padding: 14px;
+  font-size: 16px;
+  background-color: #111;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+.pay-btn:hover {
+  background-color: #000;
+}
 </style>
+
 <body>
 <div class="main-container">
 	<div class="side-container">

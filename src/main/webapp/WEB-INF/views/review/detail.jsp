@@ -200,6 +200,7 @@
                 </form>
                 <form action="${contextPath}/review/delete.do" method="post" style="display:inline;">
                     <input type="hidden" name="reviewId" value="${review.reviewId}" />
+                    <input type="hidden" name="photoUrls" value="${review.photoUrls}"/>
                     <button type="submit" onclick="return confirm('정말 삭제하시겠습니까?');">삭제</button>
                 </form>
             </c:if>

@@ -8,90 +8,144 @@
 <meta charset="UTF-8">
 <title>좌석 선택</title>
 <style>
-  .main-container {
-    width: 1017px;
-    display: flex;
-    margin: 10px auto 20px;
-  }
-  .side-container {
-  	margin-top: 5px;
-  	width: 130px;
-  }
-  .step-menu { background-color: #e60113; color: white; flex: 1; display: flex; flex-direction: column; }
-  .step-menu div { padding: 79.4px 17px; cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.2); }
-  .step-menu div.active { background-color: #a00010; }
-  .container {
-    width: 887px;
-    display: flex;
-    flex-direction: column;
-    margin: 5px auto 0;
-    border: 1px solid black;
-  }
-  .info-space {
-    width: 887px;
-    height: 70px;
-    background-color: #f4f8fc;
-    border: 1px solid #ccc;
-    padding: 15px 20px;
-    box-sizing: border-box;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-family: Arial;
-    color: #333;
-    font-size: 15px;
-  }
-  .info-box {
-    font-weight: bold;
-    padding: 10px 15px;
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
-  }
+ body {
+  font-family: 'Noto Sans KR', sans-serif;
+  margin: 0;
+  background-color: #fff;
+  color: #111;
+}
 
-  .seat-space {
-    position: relative;
-    width: 887px;
-    height: 552px;
-    background-image: url("${contextPath}/resources/image/floor2.PNG");
-    background-size: cover;
-    background-repeat: no-repeat;
-    border: 1px solid #ccc;
-  }
+.main-container {
+  width: 1017px;
+  display: flex;
+  margin: 10px auto 20px;
+}
 
-  .seat {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    position: absolute;
-    background-color: rgba(0, 128, 0, 0.4);
-    cursor: pointer;
-    font-size: 14px;
-    text-align: center;
-    border: 2px solid #fff;
-    transition: background-color 0.2s;
-    border-radius: 0;
-  }
-  .seat:hover {
-    background-color: rgba(0, 200, 0, 0.8);
-  }
-  .seat.disabled {
-    background-color: rgba(80, 80, 80, 0.5);
-    cursor: not-allowed;
-    pointer-events: none;
-  }
+.side-container {
+  margin-top: 5px;
+  width: 130px;
+}
 
-  .next-btn {
-    position: absolute;
-    bottom: 10px;
-    right: 10px;
-    padding: 10px 20px;
-    background-color: #00509e;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-  }
+.step-menu {
+  background-color: #111;
+  color: white;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+.step-menu div {
+  padding: 79.4px 17px;
+  cursor: pointer;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+.step-menu div.active {
+  background-color: #333;
+}
+
+.container {
+  width: 887px;
+  display: flex;
+  flex-direction: column;
+  margin: 5px auto 0;
+  border: 1px solid #ccc;
+  background-color: #fff;
+}
+
+.container > div:first-child {
+  width: 827px;
+  padding: 30px;
+  font-size: 30px;
+  color: #000;
+  text-align: left;
+  background-color: #fff;
+  border-bottom: 2px solid #111;
+  font-weight: bold;
+}
+
+.info-space {
+  width: 887px;
+  height: 70px;
+  background-color: #f3f3f3;
+  border: 1px solid #ddd;
+  padding: 15px 20px;
+  box-sizing: border-box;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 15px;
+  color: #111;
+}
+
+.info-box {
+  font-weight: bold;
+  padding: 10px 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+/* 좌석 배치 */
+.seat-space {
+  position: relative;
+  width: 887px;
+  height: 552px;
+  background-image: url("${contextPath}/resources/image/floor2.PNG");
+  background-size: cover;
+  background-repeat: no-repeat;
+  border: 1px solid #ccc;
+}
+
+/* 좌석 공통 스타일 */
+.seat {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  background-color: rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  font-size: 14px;
+  text-align: center;
+  border: 2px solid #444;
+  color: #000;
+  transition: all 0.2s;
+  border-radius: 6px;
+  font-weight: 500;
+}
+.seat:hover {
+  background-color: rgba(0, 0, 0, 0.3);
+  color: #fff;
+}
+.seat.disabled {
+  background-color: rgba(150, 150, 150, 0.4);
+  cursor: not-allowed;
+  pointer-events: none;
+  border: 2px dashed #999;
+  color: #555;
+}
+.seat.disabled[data-reserved="true"] {
+  background-color: rgba(200, 0, 0, 0.7);
+  color: white;
+  font-weight: bold;
+  border: 2px solid #900;
+}
+
+/* 다음 버튼 */
+.next-btn {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  padding: 12px 28px;
+  background-color: #111;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+.next-btn:hover {
+  background-color: #000;
+}
 </style>
 </head>
 <body>
