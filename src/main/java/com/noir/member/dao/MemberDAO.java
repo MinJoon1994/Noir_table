@@ -144,6 +144,11 @@ public class MemberDAO {
 		
 		return sqlSession.selectOne("mapper.member.countSearchMember",trim);
 	}
+
+	public int selectCountByLoginId(String loginId) {
+		
+		return sqlSession.selectOne("mapper.member.selectCountByLoginId",loginId);
+	}
 	
 
 }

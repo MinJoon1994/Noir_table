@@ -26,6 +26,7 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.context.support.HttpRequestHandlerServlet;
 import org.springframework.web.multipart.MultipartFile;
@@ -631,6 +632,22 @@ public class MemberController {
 		
 		return mav;
 		
+	}
+	
+	
+	@RequestMapping("/checkId.do")
+	@ResponseBody
+	public Map<String, Object> checkId(@RequestParam("loginId") String loginId) {
+		
+		Map<String, Object> result = new HashMap<>();
+		
+	    boolean isDuplicate = memberService.isIdDuplicate(loginId); // 아이디 존재 여부 확인
+	    
+	    System.out.println(isDuplicate);
+	    
+	    result.put("isDuplicate", isDuplicate);
+	    
+	    return result;
 	}
 	
 	

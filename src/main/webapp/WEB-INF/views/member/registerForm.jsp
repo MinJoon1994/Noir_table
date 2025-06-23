@@ -43,7 +43,7 @@
       font-size: 1rem;
     }
 
-    .register-form button {
+    .join-btn{
       width: 100%;
       padding: 12px;
       background-color: black;
@@ -55,7 +55,7 @@
       margin-top: 15px;
     }
 
-    .register-form button:hover {
+    .join-btn:hover {
       background-color: #452160;
     }
 
@@ -95,7 +95,36 @@
 	.login-link a:hover {
 	  text-decoration: underline;
 	}
+.id-check-wrapper {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 10px;
+}
 
+.id-check-wrapper input[type="text"] {
+  flex: 1;
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 1rem;
+}
+
+.check-btn {
+  padding: 12px 16px;
+  background-color: black;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  white-space: nowrap;
+  height: 44px;
+  cursor: pointer;
+}
+
+.check-btn:hover {
+  background-color: #452160;
+}
   </style>
 </head>
 <body>
@@ -105,10 +134,17 @@
     <div class="register-title"><a href="${contextPath}/main.do" class="main_title" style="margin:0;">NOIR</a></div>
 
 	<form class="register-form" action="${contextPath}/member/register.do" method="post">
-	  <input type="text" name="loginId" placeholder="아이디" value="${param.loginId}">
-	  <c:if test="${not empty loginIdError}">
-	    <div class="error-msg">${loginIdError}</div>
-	  </c:if>
+		<!-- 아이디 + 중복확인 버튼 묶음 -->
+		<div class="id-check-wrapper">
+		  <input type="text" name="loginId" id="loginId" placeholder="아이디" value="${param.loginId}">
+		  <button type="button" class="check-btn" onclick="checkDuplicateId()">중복확인</button>
+		</div>
+		
+		<div id="idCheckResult" class="error-msg" style="color: red;">
+		  <c:if test="${not empty loginIdError}">
+		    ${loginIdError}
+		  </c:if>
+		</div>
 	
 	  <input type="password" name="password" placeholder="비밀번호">
 	  <c:if test="${not empty passwordError}">
@@ -147,7 +183,7 @@
 	  </div>
 	  
 	
-	  <button type="submit">회원가입</button>
+	  <button class="join-btn" type="submit">회원가입</button>
 	</form>
 	
 	<!-- 로그인 링크 -->
@@ -156,5 +192,35 @@
 	</div>
   </div>
 
+<script>
+  function checkDuplicateId() {
+    const loginId = document.getElementById("loginId").value.trim();
+    const resultEl = document.getElementById("idCheckResult");
+
+    if (!loginId) {
+      resultEl.style.color = "red";
+      resultEl.textContent = "아이디를 입력해주세요.";
+      return;
+    }
+
+    fetch("${contextPath}/member/checkId.do?loginId=" + encodeURIComponent(loginId))
+      .then(response => response.json())
+      .then(data => {
+	   	  if (data.isDuplicate) {
+	   		  resultEl.style.color = "red";
+	   		  resultEl.textContent = "이미 사용 중인 아이디입니다.";
+	   		} else {
+	   		  resultEl.style.color = "green";
+	   		  resultEl.textContent = "사용 가능한 아이디입니다.";
+	   		}
+      })
+      .catch(error => {
+        resultEl.style.color = "red";
+        resultEl.textContent = "오류 발생: 중복 확인 실패";
+      });
+  }
+</script>
 </body>
 </html>
+
+

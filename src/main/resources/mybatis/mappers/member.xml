@@ -261,4 +261,8 @@
 	<select id="findNameByMemberId" parameterType="int" resultType="String">
 		select name from noir_member where member_id = #{member_id}
 	</select>
+	
+	<select id="selectCountByLoginId" parameterType="String" resultType="int">
+	    SELECT COUNT(*) FROM noir_member WHERE login_id = #{loginId}
+	</select>
 </mapper>

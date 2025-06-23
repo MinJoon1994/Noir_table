@@ -289,4 +289,9 @@ public class MemberService {
 		
 		return memberDAO.countSearchMember(trim);
 	}
+
+	public boolean isIdDuplicate(String loginId) {
+		
+		return memberDAO.selectCountByLoginId(loginId) > 0;
+	}
 }
