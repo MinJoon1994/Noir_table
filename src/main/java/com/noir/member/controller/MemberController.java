@@ -643,8 +643,6 @@ public class MemberController {
 		
 	    boolean isDuplicate = memberService.isIdDuplicate(loginId); // 아이디 존재 여부 확인
 	    
-	    System.out.println(isDuplicate);
-	    
 	    result.put("isDuplicate", isDuplicate);
 	    
 	    return result;
